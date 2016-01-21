@@ -1,0 +1,124 @@
+{
+  "name": "sound-math-app",
+  "title": "soundOmath",
+  "version": "0.2.1",
+  "description": "Playing Sound App",
+  "author": "Martin Guggisberg <https://twitter.com/mgje>",
+  "thanksto": "Damien Seguin <https://twitter.com/dmnsgn>",
+  "homepage": "https://github.com/mgje",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mgje/soundOmath"
+  },
+  "issues": {
+    "url": "https://github.com/mgje/soundOmath/issues"
+  },
+  "keywords": [
+    "gulp",
+    "es6",
+    "es2015",
+    "boilerplate",
+    "frontend",
+    "tasks",
+    "workflow",
+    "sass",
+    "scss",
+    "less",
+    "stylus",
+    "coffee-script",
+    "react",
+    "backbone"
+  ],
+  "license": "MIT",
+  "vendors": [
+    "./src/vendor/jquery/jquery-2.1.0.js",
+    "./src/vendor/bootstrap/bootstrap.js"
+  ],
+  "napa": {
+    "greensock": "greensock/GreenSock-JS"
+  },
+  "dependencies": {
+    "normalize.css": "git://github.com/necolas/normalize.css.git#3.0.3",
+    "sass-easing": "^1.0.3",
+    "sass-font-face": "^1.0.1"
+  },
+  "devDependencies": {
+    "autoprefixer": "^6.1.x",
+    "babel-core": "^6.2.x",
+    "babel-preset-es2015": "^6.1.x",
+    "babelify": "^7.2.0",
+    "browser-sync": "^2.10.x",
+    "browserify": "^12.0.x",
+    "chalk": "^1.1.x",
+    "css-mqpacker": "^4.0.x",
+    "csswring": "^4.0.x",
+    "del": "^2.1.x",
+    "favicons": "^4.2.x",
+    "fontmin": "^0.8.x",
+    "gulp": "github:gulpjs/gulp#4.0",
+    "gulp-cache": "^0.4.x",
+    "gulp-changed": "^1.3.x",
+    "gulp-filter": "^3.0.x",
+    "gulp-header": "^1.7.x",
+    "gulp-imagemin": "^2.4.x",
+    "gulp-mocha": "^2.2.x",
+    "gulp-newer": "^1.1.x",
+    "gulp-notify": "^2.2.x",
+    "gulp-postcss": "^6.0.x",
+    "gulp-preprocess": "^2.0.x",
+    "gulp-rename": "^1.2.x",
+    "gulp-ruby-sass": "^2.0.6",
+    "gulp-sitemap": "^2.2.x",
+    "gulp-sourcemaps": "^1.6.x",
+    "gulp-uglify": "^1.5.x",
+    "gulp-util": "^3.0.x",
+    "gulp-w3cjs": "^1.2.x",
+    "gulp-watch": "^4.3.x",
+    "gulp.spritesmith": "^6.0.x",
+    "imagemin-pngquant": "^4.2.x",
+    "minimist": "^1.2.x",
+    "napa": "^2.0.x",
+    "pretty-hrtime": "^1.0.x",
+    "psi": "^2.0.x",
+    "vinyl-buffer": "^1.0.x",
+    "vinyl-source-stream": "^1.1.x",
+    "watchify": "^3.6.x"
+  },
+  "scripts": {
+    "init": "npm i inquirer chalk cli-spinner del babel-cli babel-preset-es2015 && babel-node ./boilerplate/init/index.js",
+    "install": "napa"
+  },
+  "directories": {
+    "src": "./src",
+    "dist": "./dist",
+    "test": "./test"
+  },
+  "config": {
+    "verbose": true,
+    "port": 3000,
+    "browsers": [
+      "last 2 version",
+      "safari 5",
+      "ie 7",
+      "ie 8",
+      "ie 9",
+      "opera 12.1",
+      "ios 6",
+      "android 4"
+    ],
+    "prodURL": "http://domain.tld",
+    "shareImageURL": "http://domain.tld/share/image.png",
+    "twitterHandle": "@mgje",
+    "analyticsUA": "UA-XXXXX-X",
+    "developerURL": ""
+  },
+  "extensions": {
+    "scripts": "js",
+    "styles": "scss"
+  },
+  "browserify": {
+    "transform": [
+      "babelify"
+    ]
+  }
+}
