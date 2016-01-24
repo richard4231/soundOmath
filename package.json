@@ -32,7 +32,8 @@
   "license": "MIT",
   "vendors": [
     "./src/vendor/jquery/jquery-2.1.0.js",
-    "./src/vendor/bootstrap/bootstrap.js"
+    "./src/vendor/bootstrap/bootstrap.js",
+    "./src/vendor/d3.js"
   ],
   "napa": {
     "greensock": "greensock/GreenSock-JS"
