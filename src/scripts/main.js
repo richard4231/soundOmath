@@ -41,8 +41,8 @@ $(document).ready(function(){
 	    rh = 20,
 	    rowN = 4,
 	    colN =27,
-	    lookup = ['red','blue','green','black','yellow','purple','cian'],
-	    rrange = 7;
+	    lookup = ['black','#296EAA','#D43F3A','#5CB85C','#46B0CF'],
+	    rrange = lookup.length;
 
 	let data = [];
 	for (let k = 0; k < rowN; k += 1) {
@@ -56,12 +56,12 @@ $(document).ready(function(){
 
 	// Create a group for each row in the data matrix and
 	// translate the group vertically
-	var grp = svg.selectAll('g')
+	let grp = svg.selectAll('g')
 	    .data(data)
 	    .enter()
 	    .append('g')
 	    .attr('transform', function(d, i) {
-	        return 'translate(0, ' + 24 * i + ')';
+	        return 'translate(0, ' + 54 * i + ')';
 	    });
 
 	// For each group, create a set of rectangles and bind 
@@ -75,6 +75,18 @@ $(document).ready(function(){
 	        .attr('fill', function(d,i) { return lookup[d[1]];})
 	        .attr('width', rw)
 	        .attr('height', rh);
+			
+	grp.selectAll('line')
+	    .data(function(d) { return d ; })
+	    .enter()
+	    //.filter(function(d,i) {return i > 5; })
+			.append("line")
+  				.attr("x1", function(d, i) { return 28 * i+19; })
+  				.attr("y1", 20)
+  				.attr("x2",function(d, i) { return 28 * i+19; })
+  				.attr("y2",30)
+  				.style("stroke", "black")
+  				.style("stroke-width","2px");        
 	        
 
 
