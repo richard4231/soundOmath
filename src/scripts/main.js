@@ -31,18 +31,26 @@ $(document).ready(function(){
     }
 
 	// Draw so stuff
-	var width = 700,
+	let width = 700,
 	    height = 400,
 	    div = d3.select('#chart'),
 	    svg = div.append('svg')
 	        .attr('width', width)
 	        .attr('height', height),
 	    rw = 20,
-	    rh = 20;
+	    rh = 20,
+	    rowN = 4,
+	    colN =27,
+	    lookup = ['red','blue','green','black','yellow','purple','cian'],
+	    rrange = 7;
 
-	var data = [];
-	for (var k = 0; k < 4; k += 1) {
-	    data.push(d3.range(28));
+	let data = [];
+	for (let k = 0; k < rowN; k += 1) {
+		let row = [];
+		data.push(row);
+		for (let i = 0; i < colN; i +=1){
+			row.push([i, Math.trunc(Math.random()*rrange)])
+		}
 	}
 
 
@@ -64,8 +72,10 @@ $(document).ready(function(){
 	    .enter()
 	    .append('rect')
 	        .attr('x', function(d, i) { return 28 * i; })
+	        .attr('fill', function(d,i) { return lookup[d[1]];})
 	        .attr('width', rw)
 	        .attr('height', rh);
+	        
 
 
 });
