@@ -77,9 +77,15 @@ $(document).ready(function(){
 	        .attr('height', rh);
 			
 	grp.selectAll('line')
-	    .data(function(d) { return d ; })
+	    .data(function(d,i) { 
+	    	if (i > 10) {
+	    		return d;
+	    	} else {
+	    		return [];
+	    	}
+	    	 
+	    })
 	    .enter()
-	    //.filter(function(d,i) {return i > 5; })
 			.append("line")
   				.attr("x1", function(d, i) { return 28 * i+19; })
   				.attr("y1", 20)
