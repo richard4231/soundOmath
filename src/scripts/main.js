@@ -31,7 +31,7 @@ $(document).ready(function(){
     }
 
 	// Draw so stuff
-	let width = 700,
+	let width = 1230,
 	    height = 400,
 	    div = d3.select('#chart'),
 	    svg = div.append('svg')
@@ -40,10 +40,21 @@ $(document).ready(function(){
 	    rw = 20,
 	    rh = 20,
 	    rowN = 4,
-	    colN =27,
+	    colN =40,
 	    lookup = ['black','#296EAA','#D43F3A','#5CB85C','#46B0CF'],
 	    rrange = lookup.length;
 
+// Random Data
+	// let data = [];
+	// for (let k = 0; k < rowN; k += 1) {
+	// 	let row = [];
+	// 	data.push(row);
+	// 	for (let i = 0; i < colN; i +=1){
+	// 		row.push([i, Math.trunc(Math.random()*rrange)])
+	// 	}
+	// }
+
+// Row calculation
 	let data = [];
 	for (let k = 0; k < rowN; k += 1) {
 		let row = [];
@@ -54,6 +65,9 @@ $(document).ready(function(){
 	}
 
 
+
+
+
 	// Create a group for each row in the data matrix and
 	// translate the group vertically
 	let grp = svg.selectAll('g')
@@ -61,7 +75,7 @@ $(document).ready(function(){
 	    .enter()
 	    .append('g')
 	    .attr('transform', function(d, i) {
-	        return 'translate(0, ' + 54 * i + ')';
+	        return 'translate(5, ' + 54 * i + ')';
 	    });
 
 	// For each group, create a set of rectangles and bind 
@@ -75,27 +89,28 @@ $(document).ready(function(){
 	        .attr('fill', function(d,i) { return lookup[d[1]];})
 	        .attr('width', rw)
 	        .attr('height', rh);
-			
+
+	//Modulo 10 ticks        
 	grp.selectAll('line')
-	    .data(function(d,i) { 
-	    	if (i > 10) {
-	    		return d;
-	    	} else {
-	    		return [];
-	    	}
-	    	 
-	    })
-	    .enter()
-			.append("line")
-  				.attr("x1", function(d, i) { return 28 * i+19; })
-  				.attr("y1", 20)
-  				.attr("x2",function(d, i) { return 28 * i+19; })
-  				.attr("y2",30)
-  				.style("stroke", "black")
-  				.style("stroke-width","2px");        
-	        
+	    .data( (d) => d)
+	    .enter().append('line')
+	    .filter((d,i) => i%10===0)
+  			.attr('x1',  (d, i) => { return 280 * i+1; })
+  			.attr('y1', 20)
+  			.attr('x2', (d, i) => { return 280 * i+1; })
+  			.attr('y2',40)
+  			.style('stroke', 'black')
+  			.style('stroke-width','2px');      
 
-
+  	// Text 
+  	grp.selectAll('text')
+	    .data( (d) => d)
+	    .enter().append('text')
+	    .filter((d,i) => i%10===0)
+	    	.attr('x', (d, i) => { return 280 * i+5; })
+	    	.attr('y', '38')  
+	    	.attr('font-family', 'sans-serif') 
+	    	.text( (d, i,k) => k*40+i*10+1); 
 });
 
 
