@@ -61,6 +61,8 @@ let renderGraph = (data) => {
 	        .attr('width', rw)
 	        .attr('height', rh);
 
+	alert('wait');        
+
 	//Modulo 10 ticks        
 	grp.selectAll('line')
 	    .data( (d) => d)
@@ -82,9 +84,6 @@ let renderGraph = (data) => {
 	    	.attr('y', '38')  
 	    	.attr('font-family', 'sans-serif') 
 	    	.text( (d, i,k) => k*40+i*10+1); 
-
-
-
 };
 
 
@@ -104,13 +103,20 @@ let readInput = () => {
 
 // Redraw Game
 
-let redraw = () => {
-	let inp = [2,6,4,7];
-	let t = 1; // cout value
-	let col = 0; // current color offset
-	let data = [];
-	let nextEvent = inp[col];
-	let tmp = 0;
+let redraw = (inpstrarr) => {
+	let inp = [];
+	// parse input
+	for (let i = 0; i < inpstrarr.length; i++){
+		inp.push(parseInt(inpstrarr[i]));
+	};
+
+    // init values
+	let t = 1, // cout value
+		col = 0, // current color offset
+		data = [],
+		nextEvent = inp[col],
+		tmp = 0;
+
 	for (let k = 0; k < rowN; k += 1) {
 		let row = [];
 		data.push(row);
@@ -142,11 +148,9 @@ let registerInputOnChange = () => {
 			.parent()
 			.children('input.form-control')
 			.change(() => {
-				alert(readInput());
+				let newdata = redraw(readInput());
+				renderGraph(newdata);
 			});
-			// .on('change', (e) => {
-			// 	alert(readInput());
-			// });
 	}
 };
 
@@ -190,7 +194,7 @@ let registerInputOnChange = () => {
 // React on Changes of the input fields
 
 registerInputOnChange();
-let mydata = redraw();
+let mydata = redraw(readInput());
 renderGraph(mydata);
 alert("wart mal");
 });
