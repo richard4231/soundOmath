@@ -122,6 +122,7 @@ let redraw = () => {
 				}
 				nextEvent += inp[(col+1)%inp.length];
 				tmp = col+1; // black has index 0
+				col = (col+1)%inp.length; // next color
 			} else {
 				tmp = 0;
 			}
