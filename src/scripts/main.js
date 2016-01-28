@@ -7,42 +7,7 @@
 
 $(document).ready(function(){
 
-    
 
- //    $('#btn-row1-1').on('click', () => {
- //    var $btn = $(this).button('loading')
-   
- //    $btn.button('reset')
-	// });
-
-// Listen on Menu entry
-	let idArr = ['#btn-row1-1','#btn-row1-2','#btn-row1-3','#btn-row1-4'];
-    for (let i in idArr) {
-    	$(idArr[i])
-			.parent()
-			.children('ul.dropdown-menu')
-			.on('click', (e) => {
-				$(idArr[i])
-				.parent()
-				.parent()
-				.children('input.form-control')
-				.attr('value',e.target.text);
-		});	
-    }
-
-	// Draw so stuff
-	let width = 1230,
-	    height = 400,
-	    div = d3.select('#chart'),
-	    svg = div.append('svg')
-	        .attr('width', width)
-	        .attr('height', height),
-	    rw = 20,
-	    rh = 20,
-	    rowN = 4,
-	    colN =40,
-	    lookup = ['black','#296EAA','#D43F3A','#5CB85C','#46B0CF'],
-	    rrange = lookup.length;
 
 // Random Data
 	// let data = [];
@@ -55,16 +20,22 @@ $(document).ready(function(){
 	// }
 
 // Row calculation
+let initDataSet = () =>{
 	let data = [];
+	let t = 1;
 	for (let k = 0; k < rowN; k += 1) {
 		let row = [];
 		data.push(row);
 		for (let i = 0; i < colN; i +=1){
-			row.push([i, Math.trunc(Math.random()*rrange)])
+			row.push([t, 0]);
+			t = t + 1;
 		}
 	}
+	return data;
+};
 
 
+let renderGraph = (data) => {
 
 
 
@@ -111,6 +82,116 @@ $(document).ready(function(){
 	    	.attr('y', '38')  
 	    	.attr('font-family', 'sans-serif') 
 	    	.text( (d, i,k) => k*40+i*10+1); 
+
+
+
+};
+
+
+// get values
+
+let getButtonIds = () => ['#btn-row1-1','#btn-row1-2','#btn-row1-3','#btn-row1-4'];
+
+let readInput = () => {
+	let ids = getButtonIds();
+	let out = [];
+	for (let i in ids) {
+		let val = $(ids[i]).parent().parent().children('input')[0].value;
+		out.push(val);
+	}
+	return out;
+};
+
+// Redraw Game
+
+let redraw = () => {
+	let inp = [2,6,4,7];
+	let t = 1; // cout value
+	let col = 0; // current color offset
+	let data = [];
+	let nextEvent = inp[col];
+	let tmp = 0;
+	for (let k = 0; k < rowN; k += 1) {
+		let row = [];
+		data.push(row);
+		for (let i = 0; i < colN; i +=1){
+			if (t ===  nextEvent){
+				// jump over 0 color entries
+				while (inp[(col+1)%inp.length] < 1){
+					col = (col+1)%inp.length;
+				}
+				nextEvent += inp[(col+1)%inp.length];
+				tmp = col+1; // black has index 0
+			} else {
+				tmp = 0;
+			}
+			row.push([t, tmp]);
+			t = t + 1;
+		}
+	}
+	return data;
+}
+
+
+let registerInputOnChange = () => {
+	let ids = getButtonIds();
+	for (let i in ids) {
+		$(ids[i])
+			.parent()
+			.parent()
+			.children('input.form-control')
+			.change(() => {
+				alert(readInput());
+			});
+			// .on('change', (e) => {
+			// 	alert(readInput());
+			// });
+	}
+};
+
+// Listen on Menu entry
+	let idArr = getButtonIds();
+	let ec = jQuery.Event( 'change' );
+    for (let i in idArr) {
+    	$(idArr[i])
+			.parent()
+			.children('ul.dropdown-menu')
+			.on('click', (e) => {
+				$(idArr[i])
+				.parent()
+				.parent()
+				.children('input.form-control')
+				.attr('value',e.target.text)
+				//send change event
+				.trigger(ec);
+		});	
+    }
+
+
+// Init Display    
+	// Draw so stuff
+	// Global stuff
+	let width = 1230,
+    height = 400,
+    div = d3.select('#chart'),
+    svg = div.append('svg')
+        .attr('width', width)
+        .attr('height', height),
+    rw = 20,
+    rh = 20,
+    rowN = 4,
+    colN =40,
+    lookup = ['black','#296EAA','#D43F3A','#5CB85C','#46B0CF'],
+    rrange = lookup.length;
+    //data = initDataSet();
+    //renderGraph(data);
+
+// React on Changes of the input fields
+
+registerInputOnChange();
+let mydata = redraw();
+renderGraph(mydata);
+alert("wart mal");
 });
 
 
