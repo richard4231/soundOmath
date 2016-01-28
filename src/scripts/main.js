@@ -1,43 +1,6 @@
-// import TweenMax from 'TweenMax'
-// import View from './views/view'
-
-// const g = 9.81;
-
-// Register Listeners
-
 $(document).ready(function(){
 
-
-
-// Random Data
-	// let data = [];
-	// for (let k = 0; k < rowN; k += 1) {
-	// 	let row = [];
-	// 	data.push(row);
-	// 	for (let i = 0; i < colN; i +=1){
-	// 		row.push([i, Math.trunc(Math.random()*rrange)])
-	// 	}
-	// }
-
-// Row calculation
-let initDataSet = () =>{
-	let data = [];
-	let t = 1;
-	for (let k = 0; k < rowN; k += 1) {
-		let row = [];
-		data.push(row);
-		for (let i = 0; i < colN; i +=1){
-			row.push([t, 0]);
-			t = t + 1;
-		}
-	}
-	return data;
-};
-
-
 let updateGraph = (data) =>{
-
-
 	let grp = svg.selectAll('g')
 	    .data(data);
 
@@ -49,9 +12,9 @@ let updateGraph = (data) =>{
 	    .attr('x', (d, i) =>  28 * i)
 	    .attr('width', rw)
 	    .attr('height', rh);
+
 	selection.exit().remove();    
 };
-
 
 let renderGraph = (data) => {
 	// Create a group for each row in the data matrix and
@@ -60,9 +23,7 @@ let renderGraph = (data) => {
 	    .data(data)
 	    .enter()
 	    .append('g')
-	    .attr('transform', function(d, i) {
-	        return 'translate(5, ' + 54 * i + ')';
-	    });
+	    .attr('transform', (d, i) => 'translate(5, ' + 54 * i + ')');
 
 	// For each group, create a set of rectangles and bind 
 	// them to the inner array (the inner array is already
@@ -74,18 +35,16 @@ let renderGraph = (data) => {
 	        .attr('x', (d, i) =>  28 * i)
 	        .attr('fill', (d,i) => lookup[d[1]])
 	        .attr('width', rw)
-	        .attr('height', rh);
-
-	alert('wait');        
+	        .attr('height', rh);     
 
 	//Modulo 10 ticks        
 	grp.selectAll('line')
 	    .data( (d) => d)
 	    .enter().append('line')
 	    .filter((d,i) => i%10===0)
-  			.attr('x1',  (d, i) => { return 280 * i+1; })
+  			.attr('x1',  (d, i) => 280 * i+1)
   			.attr('y1', 20)
-  			.attr('x2', (d, i) => { return 280 * i+1; })
+  			.attr('x2', (d, i) => 280 * i+1)
   			.attr('y2',40)
   			.style('stroke', 'black')
   			.style('stroke-width','2px');      
@@ -101,27 +60,23 @@ let renderGraph = (data) => {
 	    	.text( (d, i,k) => k*40+i*10+1); 
 };
 
-
 // get values
-
 let getButtonIds = () => ['#btn-row1-1','#btn-row1-2','#btn-row1-3','#btn-row1-4'];
 
 let readInput = () => {
 	let ids = getButtonIds();
 	let out = [];
 	for (let i in ids) {
-		let val = $(ids[i]).parent().parent().children('input')[0].value;
+		let val = $(ids[i])
+						.parent()
+						.parent()
+						.children('input')[0].value;
 		out.push(val);
 	}
 	return out;
 };
 
-
-
-
-
 // Redraw Game
-
 let redraw = (inpstrarr) => {
 	let inp = [];
 	// parse input
@@ -131,10 +86,18 @@ let redraw = (inpstrarr) => {
 
     // init values
 	let t = 1, // cout value
-		col = 0, // current color offset
 		data = [],
-		nextEvent = inp[col],
+		col,
+		nextEvent,
 		tmp = 0;
+
+	for (let i = 0; i < inp.length; i++){
+		col = i;
+		nextEvent = inp[col];
+		if (nextEvent > 0){
+			break;
+		}
+	}
 
 	for (let k = 0; k < rowN; k += 1) {
 		let row = [];
@@ -142,11 +105,12 @@ let redraw = (inpstrarr) => {
 		for (let i = 0; i < colN; i +=1){
 			if (t ===  nextEvent){
 				// jump over 0 color entries
+				tmp = col+1; // black has index 0
+				// if something is zero go further
 				while (inp[(col+1)%inp.length] < 1){
 					col = (col+1)%inp.length;
 				}
 				nextEvent += inp[(col+1)%inp.length];
-				tmp = col+1; // black has index 0
 				col = (col+1)%inp.length; // next color
 			} else {
 				tmp = 0;
@@ -174,6 +138,7 @@ let registerInputOnChange = () => {
 };
 
 // Listen on Menu entry
+let registerButton = () => {
 	let idArr = getButtonIds();
 	let ec = jQuery.Event( 'change' );
     for (let i in idArr) {
@@ -190,32 +155,28 @@ let registerInputOnChange = () => {
 				.trigger(ec);
 		});	
     }
+};
 
-
-// Init Display    
-	// Draw so stuff
-	// Global stuff
 	let width = 1230,
     height = 400,
     div = d3.select('#chart'),
     svg = div.append('svg')
         .attr('width', width)
         .attr('height', height),
+    //grid    
     rw = 20,
     rh = 20,
-    rowN = 4,
+    rowN =4,
     colN =40,
+    //colordefinition
     lookup = ['black','#296EAA','#D43F3A','#5CB85C','#46B0CF'],
     rrange = lookup.length;
-    //data = initDataSet();
-    //renderGraph(data);
 
-// React on Changes of the input fields
-
-registerInputOnChange();
-let mydata = redraw(readInput());
-renderGraph(mydata);
-alert("wart mal");
+	// React on Changes of the input fields
+	registerButton();
+	registerInputOnChange();
+	let mydata = redraw(readInput());
+	renderGraph(mydata);
 });
 
 
