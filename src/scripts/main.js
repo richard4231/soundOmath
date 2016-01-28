@@ -35,10 +35,25 @@ let initDataSet = () =>{
 };
 
 
+let updateGraph = (data) =>{
+
+
+	let grp = svg.selectAll('g')
+	    .data(data);
+
+	let selection = grp.selectAll('rect').data((d) => d)
+		.attr('fill', (d,i) => lookup[d[1]]);
+
+	selection.enter()
+		.append('rect')
+	    .attr('x', (d, i) =>  28 * i)
+	    .attr('width', rw)
+	    .attr('height', rh);
+	selection.exit().remove();    
+};
+
+
 let renderGraph = (data) => {
-
-
-
 	// Create a group for each row in the data matrix and
 	// translate the group vertically
 	let grp = svg.selectAll('g')
@@ -53,11 +68,11 @@ let renderGraph = (data) => {
 	// them to the inner array (the inner array is already
 	// binded to the group)
 	grp.selectAll('rect')
-	    .data(function(d) { return d; })
+	    .data((d) => d)
 	    .enter()
 	    .append('rect')
-	        .attr('x', function(d, i) { return 28 * i; })
-	        .attr('fill', function(d,i) { return lookup[d[1]];})
+	        .attr('x', (d, i) =>  28 * i)
+	        .attr('fill', (d,i) => lookup[d[1]])
 	        .attr('width', rw)
 	        .attr('height', rh);
 
@@ -100,6 +115,10 @@ let readInput = () => {
 	}
 	return out;
 };
+
+
+
+
 
 // Redraw Game
 
@@ -149,7 +168,7 @@ let registerInputOnChange = () => {
 			.children('input.form-control')
 			.change(() => {
 				let newdata = redraw(readInput());
-				renderGraph(newdata);
+				updateGraph(newdata);
 			});
 	}
 };
