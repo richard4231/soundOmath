@@ -157,6 +157,114 @@ let registerButton = () => {
     }
 };
 
+let registerPlayButton = () => {
+	$('#playmusicbtn').on('click', (e) => {
+		runSeq = true;
+		playMusic();
+		//alert('here');
+	});
+};
+
+
+let registerStopButton = () => {
+	$('#stopmusicbtn').on('click', (e) => {
+		runSeq = false;
+		//alert('here');
+	});
+};
+
+// Sound Definition
+let runSeq = true;
+
+let playSound = (startTime, pitch, duration, gain) => {
+	//let startTime = audioContext.currentTime + delay;
+  	let endTime = startTime + duration;
+
+  	let outgain = audioContext.createGain();
+  	outgain.gain.value = gain;
+  	outgain.connect(audioContext.destination);
+  	
+
+  	let envelope = audioContext.createGain();
+  	envelope.connect(outgain);
+  	envelope.gain.value = 0;
+  	envelope.gain.setTargetAtTime(1, startTime, 0.1);
+  	envelope.gain.setTargetAtTime(0, endTime, 0.2);
+
+  	let oscillator = audioContext.createOscillator();
+  	oscillator.connect(envelope);
+  
+	let vibrato = audioContext.createGain();
+	vibrato.gain.value = 30;
+	vibrato.connect(oscillator.detune);
+
+
+	let lfo = audioContext.createOscillator();
+	lfo.connect(vibrato);
+	lfo.frequency.value =5; 
+
+  	oscillator.type = 'sawtooth';
+  	oscillator.detune.value = pitch * 100;
+  	oscillator.frequency.value = 100;
+
+  	oscillator.start(startTime);
+  	lfo.start(startTime);
+  	oscillator.stop(endTime + 2);
+  	lfo.stop(endTime + 2);
+};
+
+/// Play Loop
+let runSequencers = () => {
+	if (!runSeq || soundQueue.length === 0){console.log("stop");return;}
+	let ct = audioContext.currentTime;
+	while (soundQueue.length>0 && soundQueue[0][0]< ct+0.15){
+		//console.log('ct:'+ct+'planed time:'+soundQueue[0][0]);
+		let tone = soundQueue.splice(0,1);
+		playSound(tone[0][0],tone[0][1],tone[0][2],tone[0][3]);
+
+	}
+	setTimeout(runSequencers,90);
+}
+
+
+/// sounds start here
+/// Sound var
+let soundQueue = [];
+let audioContext = new AudioContext();
+let soundSpeed = 0.3;
+let sounds = [[-10, 0.5,0.3],[3, 0.5,0.7],[10, 0.5,0.7],[15, 0.5,0.7],[0, 0.5,0.7]];
+
+
+
+/// Sound Methods
+let playMusic = () => {
+
+	// fill soundQueue
+    
+	
+	let rectarr = d3.selectAll('rect').data();
+    let startTime = audioContext.currentTime;
+    //console.log('Start'+startTime);
+    soundQueue =[];
+	for (let i=0; i < rectarr.length; i++) {
+		let v = rectarr[i][1];
+		//playSound(i,sounds[v][0],sounds[v][1],sounds[v][2]);
+		//alert(i);
+		let tmp = [];
+		tmp.push(i*soundSpeed+startTime);
+		tmp.push(sounds[v][0]);
+		tmp.push(0.2);
+		tmp.push(sounds[v][2]);
+		soundQueue.push(tmp);
+	}
+
+	//console.log('startsequencer'+audioContext.currentTime);
+    runSequencers();
+};
+
+
+
+// Init Screen
 	let width = 1230,
     height = 400,
     div = d3.select('#chart'),
@@ -173,10 +281,17 @@ let registerButton = () => {
     rrange = lookup.length;
 
 	// React on Changes of the input fields
+
 	registerButton();
 	registerInputOnChange();
 	let mydata = redraw(readInput());
 	renderGraph(mydata);
+	registerPlayButton();
+	registerStopButton();
+
+
+
+
 });
 
 
