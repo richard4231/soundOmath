@@ -1,6 +1,6 @@
 $(document).ready(function(){
 
-let updateGraph = (data) =>{
+const updateGraph = (data) => {
 	let grp = svg.selectAll('g')
 	    .data(data);
 
@@ -16,14 +16,14 @@ let updateGraph = (data) =>{
 	selection.exit().remove();    
 };
 
-let renderGraph = (data) => {
+const renderGraph = (data) => {
 	// Create a group for each row in the data matrix and
 	// translate the group vertically
 	let grp = svg.selectAll('g')
 	    .data(data)
 	    .enter()
 	    .append('g')
-	    .attr('transform', (d, i) => 'translate(5, ' + 54 * i + ')');
+	    .attr('transform', (d, i) => 'translate(0, ' + 54 * i + ')');
 
 	// For each group, create a set of rectangles and bind 
 	// them to the inner array (the inner array is already
@@ -61,9 +61,9 @@ let renderGraph = (data) => {
 };
 
 // get values
-let getButtonIds = () => ['#btn-row1-1','#btn-row1-2','#btn-row1-3','#btn-row1-4'];
+const getButtonIds = () => ['#btn-row1-1','#btn-row1-2','#btn-row1-3','#btn-row1-4'];
 
-let readInput = () => {
+const readInput = () => {
 	let ids = getButtonIds();
 	let out = [];
 	for (let i in ids) {
@@ -77,7 +77,7 @@ let readInput = () => {
 };
 
 // Redraw Game
-let redraw = (inpstrarr) => {
+const redraw = (inpstrarr) => {
 	let inp = [];
 	// parse input
 	for (let i = 0; i < inpstrarr.length; i++){
@@ -120,10 +120,16 @@ let redraw = (inpstrarr) => {
 		}
 	}
 	return data;
-}
+};
 
 
-let registerInputOnChange = () => {
+const highlightEl  = (el,col,time) =>{
+   $(el).attr( "fill", hlookup[col]);
+   setTimeout(() => {$(el).attr( "fill", lookup[col]);},time*1000);
+
+};
+
+const registerInputOnChange = () => {
 	let ids = getButtonIds();
 	for (let i in ids) {
 		$(ids[i])
@@ -138,7 +144,7 @@ let registerInputOnChange = () => {
 };
 
 // Listen on Menu entry
-let registerButton = () => {
+const registerButton = () => {
 	let idArr = getButtonIds();
 	let ec = jQuery.Event( 'change' );
     for (let i in idArr) {
@@ -157,7 +163,7 @@ let registerButton = () => {
     }
 };
 
-let registerPlayButton = () => {
+const registerPlayButton = () => {
 	$('#playmusicbtn').on('click', (e) => {
 		runSeq = true;
 		playMusic();
@@ -165,25 +171,44 @@ let registerPlayButton = () => {
 	});
 };
 
-
-let registerStopButton = () => {
+const registerStopButton = () => {
 	$('#stopmusicbtn').on('click', (e) => {
 		runSeq = false;
 		//alert('here');
 	});
 };
 
-// Sound Definition
-let runSeq = true;
+// const registerParameterButton = () => {
+// 	$('#parameterbtn').on('click', (e) => {
+// 		let el = d3.selectAll('rect')[0][4];
+// 		let time = 0.9;
+// 		highlightEl(el,0,time);
+// 	});
+// };
 
-let playSound = (startTime, pitch, duration, gain) => {
+$('#paraOszbtn').on('click', (e) => {
+	let s2 = $('input[name=speed]:checked', '#parameterModal').val();
+	let s = $('input[name=oszform]:checked', '#parameterModal').val();
+	//if (! typeof s === "undefined" && ! typeof s2  === "undefined"){
+	if (! false){
+		oscillatorType = s;
+		soundSpeed = parseFloat(s2);
+		$('#parameterModal').modal('hide');
+	}
+});
+
+
+
+// Sound Definition
+
+
+const playSound = (startTime, pitch, duration, gain) => {
 	//let startTime = audioContext.currentTime + delay;
   	let endTime = startTime + duration;
 
   	let outgain = audioContext.createGain();
   	outgain.gain.value = gain;
-  	outgain.connect(audioContext.destination);
-  	
+  	outgain.connect(audioContext.destination); 	
 
   	let envelope = audioContext.createGain();
   	envelope.connect(outgain);
@@ -203,7 +228,7 @@ let playSound = (startTime, pitch, duration, gain) => {
 	lfo.connect(vibrato);
 	lfo.frequency.value =5; 
 
-  	oscillator.type = 'sawtooth';
+  	oscillator.type = oscillatorType;
   	oscillator.detune.value = pitch * 100;
   	oscillator.frequency.value = 100;
 
@@ -214,35 +239,38 @@ let playSound = (startTime, pitch, duration, gain) => {
 };
 
 /// Play Loop
-let runSequencers = () => {
+const runSequencers = () => {
 	if (!runSeq || soundQueue.length === 0){console.log("stop");return;}
 	let ct = audioContext.currentTime;
 	while (soundQueue.length>0 && soundQueue[0][0]< ct+0.15){
 		//console.log('ct:'+ct+'planed time:'+soundQueue[0][0]);
 		let tone = soundQueue.splice(0,1);
-		playSound(tone[0][0],tone[0][1],tone[0][2],tone[0][3]);
-
+		// playsound (starttime, pitch, duration,             gaiin)
+		playSound(tone[0][0],sounds[tone[0][1]][0],tone[0][2],sounds[tone[0][1]][2]);		
+		// element              color       duration
+		highlightEl(tone[0][3],tone[0][1],tone[0][2]);
 	}
 	setTimeout(runSequencers,90);
 }
 
-
 /// sounds start here
 /// Sound var
+let runSeq = true;
 let soundQueue = [];
-let audioContext = new AudioContext();
-let soundSpeed = 0.3;
-let sounds = [[-10, 0.5,0.3],[3, 0.5,0.7],[10, 0.5,0.7],[15, 0.5,0.7],[0, 0.5,0.7]];
+const audioContext = new AudioContext();
+let soundSpeed = 0.5;
+let toneduration = 0.2;
+const sounds = [[-10, 0.5,0.3],[3, 0.5,0.7],[10, 0.5,0.7],[15, 0.5,0.7],[0, 0.5,0.7]];
+let oscillatorType = 'sawtooth';
+
 
 
 
 /// Sound Methods
-let playMusic = () => {
-
-	// fill soundQueue
-    
-	
+const playMusic = () => {
+	// fill soundQueue	
 	let rectarr = d3.selectAll('rect').data();
+	let elarr = d3.selectAll('rect')[0];
     let startTime = audioContext.currentTime;
     //console.log('Start'+startTime);
     soundQueue =[];
@@ -252,21 +280,18 @@ let playMusic = () => {
 		//alert(i);
 		let tmp = [];
 		tmp.push(i*soundSpeed+startTime);
-		tmp.push(sounds[v][0]);
-		tmp.push(0.2);
-		tmp.push(sounds[v][2]);
+		tmp.push(v);
+		tmp.push(toneduration);
+		tmp.push(elarr[i]);
 		soundQueue.push(tmp);
 	}
-
 	//console.log('startsequencer'+audioContext.currentTime);
     runSequencers();
 };
 
-
-
 // Init Screen
-	let width = 1230,
-    height = 400,
+	const width = 1230,
+    height = 225,
     div = d3.select('#chart'),
     svg = div.append('svg')
         .attr('width', width)
@@ -277,20 +302,18 @@ let playMusic = () => {
     rowN =4,
     colN =40,
     //colordefinition
-    lookup = ['black','#296EAA','#D43F3A','#5CB85C','#46B0CF'],
+    lookup = ['#454545','#296EAA','#D43F3A','#5CB85C','#46B0CF'],
+    hlookup = ['#000000','#094E8A','#A41F1A','#3C983C','#2690AF'],
     rrange = lookup.length;
 
-	// React on Changes of the input fields
-
+	// Register Buttons
 	registerButton();
 	registerInputOnChange();
 	let mydata = redraw(readInput());
 	renderGraph(mydata);
 	registerPlayButton();
 	registerStopButton();
-
-
-
+	// registerParameterButton();
 
 });
 
