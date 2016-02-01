@@ -213,29 +213,30 @@ const playSound = (startTime, pitch, duration, gain) => {
   	let envelope = audioContext.createGain();
   	envelope.connect(outgain);
   	envelope.gain.value = 0;
-  	envelope.gain.setTargetAtTime(1, startTime, 0.1);
-  	envelope.gain.setTargetAtTime(0, endTime, 0.2);
+  	
+  	envelope.gain.setTargetAtTime(1, startTime, envelopeStartEndTime[0]);
+  	envelope.gain.setTargetAtTime(0, endTime, envelopeStartEndTime[1]);
 
   	let oscillator = audioContext.createOscillator();
   	oscillator.connect(envelope);
-  
-	let vibrato = audioContext.createGain();
-	vibrato.gain.value = 30;
-	vibrato.connect(oscillator.detune);
-
-
-	let lfo = audioContext.createOscillator();
-	lfo.connect(vibrato);
-	lfo.frequency.value =5; 
 
   	oscillator.type = oscillatorType;
   	oscillator.detune.value = pitch * 100;
-  	oscillator.frequency.value = 100;
+  	oscillator.frequency.value = 240;
 
-  	oscillator.start(startTime);
+	let vibrato = audioContext.createGain();
+	vibrato.gain.value = vibratogain;
+	vibrato.connect(oscillator.detune);
+
+	let lfo = audioContext.createOscillator();
+	lfo.connect(vibrato);
+	lfo.frequency.value =lfofreq; 
+
+	oscillator.start(startTime);
   	lfo.start(startTime);
-  	oscillator.stop(endTime + 2);
-  	lfo.stop(endTime + 2);
+  	oscillator.stop(endTime +2 );
+  	lfo.stop(endTime +2);
+
 };
 
 /// Play Loop
@@ -257,11 +258,23 @@ const runSequencers = () => {
 /// Sound var
 let runSeq = true;
 let soundQueue = [];
-const audioContext = new AudioContext();
+
+var audioContext = null;
+
+if('webkitAudioContext' in window) {
+    audioContext = new webkitAudioContext();
+} else {
+	audioContext = new AudioContext();
+}
+
 let soundSpeed = 0.5;
-let toneduration = 0.2;
-const sounds = [[-10, 0.5,0.3],[3, 0.5,0.7],[10, 0.5,0.7],[15, 0.5,0.7],[0, 0.5,0.7]];
-let oscillatorType = 'sawtooth';
+let toneduration = 0.3;
+let vibratogain = 0.3;
+let envelopeStartEndTime = [0.01,0.1];
+let lfofreq = 6;  //5
+// Parametrization of the 5 tones  Pitch duration volume gain
+const sounds = [[-10, 0.5,0.1],[3, 0.5,0.9],[10, 0.5,0.9],[15, 0.5,0.9],[0, 0.5,0.9]];
+let oscillatorType = 'sawtooth'; //'sine'; // 'sawtooth'
 
 
 
