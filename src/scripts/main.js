@@ -261,11 +261,18 @@ let soundQueue = [];
 
 var audioContext = null;
 
-if('AudioContext' in window) {
-    audioContext = new AudioContext();
-} else {
-	audioContext = new webkitAudioContext();
+try {
+    window.AudioContext = window.AudioContext || window.webkitAudioContext;
+    audioContext = new window.AudioContext();
+} catch (e) {
+    console.log("No Web Audio API support");
 }
+
+// if('AudioContext' in window) {
+//     audioContext = new AudioContext();
+// } else {
+// 	audioContext = new webkitAudioContext();
+// }
 
 let soundSpeed = 0.5;
 let toneduration = 0.3;
