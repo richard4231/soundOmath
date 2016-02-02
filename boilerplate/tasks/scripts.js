@@ -75,6 +75,7 @@ export function bundleVendor(done) {
     fileName: 'vendor.js'
   }, function() {
     if (!envDev) {
+      console.log('uglyfy the stuff now');
       const cmd = `uglifyjs ${config.dist}/scripts/vendor.js -o ${config.dist}/scripts/vendor.min.js`;
       exec(cmd, function(error, stdout, stderr) {
         done();

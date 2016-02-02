@@ -57,8 +57,12 @@ git clone --depth 1 https://github.com/dmnsgn/gulp-frontend-boilerplate.git && c
 
 This step sets up the boilerplate to fit your needs (App Name, JS compiler/transpiler, JS framework, CSS preprocessor).
 
+! UglyFy is needed
+
 ```bash
 npm run init
+
+npm install -g uglifyjs 
 ```
 
 ### Install

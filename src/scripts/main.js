@@ -261,10 +261,10 @@ let soundQueue = [];
 
 var audioContext = null;
 
-if('webkitAudioContext' in window) {
-    audioContext = new webkitAudioContext();
+if('AudioContext' in window) {
+    audioContext = new AudioContext();
 } else {
-	audioContext = new AudioContext();
+	audioContext = new webkitAudioContext();
 }
 
 let soundSpeed = 0.5;

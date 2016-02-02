@@ -30,7 +30,7 @@ copycssTask.description = 'copy css  & fonts stuff';
 
 gulp.task(
   'scripts',
-  gulp.parallel(bundleApp, bundleVendor)
+  gulp.parallel(bundleApp, bundleVendor, copycss, copyfonts)
 );
 const scriptTask = gulp.task('scripts');
 scriptTask.description = 'Bundle app scripts with browserify (watchify) and concatenate vendors.';
