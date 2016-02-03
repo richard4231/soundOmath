@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+	<title>soundOmath</title>
+
+	<!-- @if ENV='dev' -->
+	<link rel="stylesheet"  href="styles/bootstrap.css" >
+	<link rel="stylesheet" href="styles/font-awesome.css" >
+	<link rel="stylesheet" href="styles/main.css">
+	<!-- @endif -->
+	<!-- @if ENV='prod' -->
+	<link href="styles/bootstrap.min.css" rel="stylesheet" type="text/css">
+	<link href="styles/font-awesome.min.css" rel="stylesheet" type="text/css">
+	<link rel="stylesheet" href="styles/main.min.css">
+	<!-- @endif -->
+
+	<!-- @include inc/_meta.html -->
+
+	<!-- @include inc/_favicons.html -->
+</head>
+<body>
+	<!-- @include inc/_browserhappy.html -->
+    
+    <!-- begin body part -->
+		<div class="wrapper full-page-wrapper page-auth page-register text-center ">
+		
+			<div class="logo">
+				<a href="http://www.fhnw.ch"><img src="images/FHNW_PH_10mm.png" alt=""></a>
+				<div class="separator"><span>sound O math</span></div>
+			</div>
+
+			<h1 id="clickhere" class="btn">Click Here</h1>
+
+			<h1 id="click2" class="btn">Click 22222</h1>
+			
+			
+		</div>
+	</div>
+	<div class="footer">© 2015-2016 developped @ PH FHNW</div>
+
+
+    <!-- end body part -->
+
+	<!-- @if ENV='dev' -->
+
+
+	<script src="scripts/vendor.js"></script>
+	<script src="scripts/main.js"></script>
+	
+	<!-- @endif -->
+	<!-- @if ENV='prod' -->
+	<script src="scripts/vendor.min.js"></script>
+	<script src="scripts/main.min.js"></script>
+	<!-- @endif -->
+
+	<!-- //@include inc/_analytics.html -->
+</body>
+</html>

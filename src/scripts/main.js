@@ -1,5 +1,30 @@
 $(document).ready(function(){
+// create HTML stuff
+const createHtmlTonControl = (nr) => {
+	const posnr = '1';
+	
 
+	let elContainer = 'ton-control-'+nr;
+	let elOutDiv = document.createElement("DIV");
+	elOutDiv.setAttribute("class", "col-xs-3");
+	
+	let elinputGroup = document.createElement("DIV");
+	elinputGroup.setAttribute("class", "input-group-btn"); 
+	elOutDiv.appendChild(elinputGroup);
+	// BUTTON
+	let textnode = document.createTextNode(" Zahl"); 
+	let btn = document.createElement("BUTTON");
+	let sid='btn-row'+nr+'-'+posnr;
+	btn.setAttribute("id", sid);
+	btn.setAttribute("class", "btn btn-info dropdown-toggle");
+	btn.appendChild(textnode);
+	elinputGroup.appendChild(btn);
+	document.getElementById(elContainer).appendChild(elOutDiv);
+
+
+};
+
+// 
 const updateGraph = (data) => {
 	let grp = svg.selectAll('g')
 	    .data(data);
@@ -67,10 +92,14 @@ const readInput = () => {
 	let ids = getButtonIds();
 	let out = [];
 	for (let i in ids) {
-		let val = $(ids[i])
+		let elval = $(ids[i])
 						.parent()
 						.parent()
-						.children('input')[0].value;
+						.children('input')[0];
+		let val = 0;
+		if (typeof elval !== 'undefined'){
+			val = elval.value;
+		}
 		out.push(val);
 	}
 	return out;
@@ -165,6 +194,26 @@ const registerButton = () => {
 
 const registerPlayButton = () => {
 	$('#playmusicbtn').on('click', (e) => {
+
+		if (audioContext === null){
+			try {
+    			window.AudioContext = window.AudioContext || window.webkitAudioContext;
+    			audioContext = new window.AudioContext();
+			} catch (e) {
+    			console.log("No Web Audio API support");
+			}
+			let oscillator = audioContext.createOscillator();
+ 				oscillator.frequency.value = 400;
+ 				oscillator.connect(audioContext.destination);
+ 				oscillator.start(0);
+ 				oscillator.stop(.5)
+		}
+		runSeq = true;
+		playMusic();
+		//alert('here');
+	});
+	$('#playmusicbtn').on('touchend', (e) => {
+
 		runSeq = true;
 		playMusic();
 		//alert('here');
@@ -176,6 +225,10 @@ const registerStopButton = () => {
 		runSeq = false;
 		//alert('here');
 	});
+	// $('#stopmusicbtn').on('touchend', (e) => {
+	// 	runSeq = false;
+	// 	//alert('here');
+	// });
 };
 
 // const registerParameterButton = () => {
@@ -262,17 +315,43 @@ let soundQueue = [];
 var audioContext = null;
 
 try {
-    window.AudioContext = window.AudioContext || window.webkitAudioContext;
-    audioContext = new window.AudioContext();
+   window.AudioContext = window.AudioContext||window.webkitAudioContext;
+   var audioContext = new AudioContext();
 } catch (e) {
     console.log("No Web Audio API support");
 }
 
-// if('AudioContext' in window) {
-//     audioContext = new AudioContext();
-// } else {
-// 	audioContext = new webkitAudioContext();
-// }
+
+//IOS Start IOSHACK
+$('body').on('touchend', (e) => {
+	//alert('start sound
+	// create empty buffer
+	var buffer = audioContext.createBuffer(1, 1, 22050);
+	var source = audioContext.createBufferSource();
+	source.buffer = buffer;
+
+	// connect to output (your speakers)
+	source.connect(audioContext.destination);
+
+	// play the file
+	if (typeof source.noteOn !== 'undefined'){
+		source.noteOn(0);
+	}
+	
+	// var src = null;
+	// src = audioContext.createOscillator();
+	// src.type = 'square';
+	// src.frequency.value = 440;
+	// src.connect(audioContext.destination);
+	// let ct = audioContext.currentTime;
+	// src.start(ct+0.5);
+	// src.stop(ct+1.2);
+});
+//IOS END
+
+
+
+
 
 let soundSpeed = 0.5;
 let toneduration = 0.3;
@@ -319,12 +398,18 @@ const playMusic = () => {
     //grid    
     rw = 20,
     rh = 20,
-    rowN =4,
-    colN =40,
+    rowN =1,
+    colN =48,
     //colordefinition
-    lookup = ['#454545','#296EAA','#D43F3A','#5CB85C','#46B0CF'],
-    hlookup = ['#000000','#094E8A','#A41F1A','#3C983C','#2690AF'],
+    lookup = ['#454545','#296EAA','#5491B5','#79BEFA','#46B0CF'],
+    hlookup = ['#000000','#094E8A','#094E8A','#094E8A','#2690AF'],
+    // lookup = ['#454545','#296EAA','#D43F3A','#5CB85C','#46B0CF'],
+    // hlookup = ['#000000','#094E8A','#A41F1A','#3C983C','#2690AF'],
     rrange = lookup.length;
+
+    // Build HTML
+    //createHtmlTonControl('1');
+
 
 	// Register Buttons
 	registerButton();
@@ -333,7 +418,43 @@ const playMusic = () => {
 	renderGraph(mydata);
 	registerPlayButton();
 	registerStopButton();
-	// registerParameterButton();
+	//registerParameterButton();
+
+	
+
+//ios hack
+// 	window.addEventListener('touchend', function() {
+
+// 	// create empty buffer
+// 	var buffer = audioContext.createBuffer(1, 1, 22050);
+// 	var source = audioContext.createBufferSource();
+// 	source.buffer = buffer;
+
+// 	// connect to output (your speakers)
+// 	source.connect(audioContext.destination);
+
+// 	// play the file
+// 	source.noteOn(0);
+
+// }, false);
+
+
+
+// window.addEventListener("touchstart", function (){	
+// 		if (had_touch)		return;		
+// 		// play empty buffer to unmute audio	
+// 		var buffer = audioContext.createBuffer(1, 1, 22050);	
+// 		var source = audioContext.createBufferSource();	
+// 		source.buffer = buffer;	
+// 		source.connect(audioContext.destination);	
+// 		source.start(0);	
+// 		had_touch = true;
+// 		alert("mist");
+// 	});
+
+
+
+
 
 });
 
