@@ -1,30 +1,30 @@
 $(document).ready(function(){
 // create HTML stuff
-const createHtmlTonControl = (nr) => {
-	const posnr = '1';
+// const createHtmlTonControl = (nr) => {
+// 	const posnr = '1';
 	
 
-	let elContainer = 'ton-control-'+nr;
-	let elOutDiv = document.createElement("DIV");
-	elOutDiv.setAttribute("class", "col-xs-3");
+// 	let elContainer = 'ton-control-'+nr;
+// 	let elOutDiv = document.createElement("DIV");
+// 	elOutDiv.setAttribute("class", "col-xs-3");
 	
-	let elinputGroup = document.createElement("DIV");
-	elinputGroup.setAttribute("class", "input-group-btn"); 
-	elOutDiv.appendChild(elinputGroup);
-	// BUTTON
-	let textnode = document.createTextNode(" Zahl"); 
-	let btn = document.createElement("BUTTON");
-	let sid='btn-row'+nr+'-'+posnr;
-	btn.setAttribute("id", sid);
-	btn.setAttribute("class", "btn btn-info dropdown-toggle");
-	btn.appendChild(textnode);
-	elinputGroup.appendChild(btn);
-	document.getElementById(elContainer).appendChild(elOutDiv);
+// 	let elinputGroup = document.createElement("DIV");
+// 	elinputGroup.setAttribute("class", "input-group-btn"); 
+// 	elOutDiv.appendChild(elinputGroup);
+// 	// BUTTON
+// 	let textnode = document.createTextNode(" Zahl"); 
+// 	let btn = document.createElement("BUTTON");
+// 	let sid='btn-row'+nr+'-'+posnr;
+// 	btn.setAttribute("id", sid);
+// 	btn.setAttribute("class", "btn btn-info dropdown-toggle");
+// 	btn.appendChild(textnode);
+// 	elinputGroup.appendChild(btn);
+// 	document.getElementById(elContainer).appendChild(elOutDiv);
 
 
-};
+// };
 
-// 
+// D3JS
 const updateGraph = (data) => {
 	let grp = svg.selectAll('g')
 	    .data(data);
@@ -88,8 +88,17 @@ const renderGraph = (data) => {
 // get values
 const getButtonIds = () => ['#btn-row1-1','#btn-row1-2','#btn-row1-3','#btn-row1-4'];
 
+// reads Parameter Ton Zahl for row one
 const readInput = () => {
-	let ids = getButtonIds();
+	let ids = [];
+	// TODO use as parameter later
+	let row = 1;
+	let s='';
+	for (let i = 1; i < 4; i++){
+		s = '#btn-row'+row+'-'+i;
+		ids.push(s);
+	} 
+
 	let out = [];
 	for (let i in ids) {
 		let elval = $(ids[i])
@@ -158,8 +167,17 @@ const highlightEl  = (el,col,time) =>{
 
 };
 
+//CHANGE on TON Input is applied
 const registerInputOnChange = () => {
-	let ids = getButtonIds();
+	let ids = [];
+	// TODO use as parameter later
+	let row = 1;
+	let s='';
+	for (let i = 1; i < 4; i++){
+		s = '#btn-row'+row+'-'+i;
+		ids.push(s);
+	} 
+
 	for (let i in ids) {
 		$(ids[i])
 			.parent()
@@ -172,19 +190,26 @@ const registerInputOnChange = () => {
 	}
 };
 
-// Listen on Menu entry
+// Register count Button
 const registerButton = () => {
-	let idArr = getButtonIds();
+	let ids = [];
+	// TODO use as parameter later
+	let row = 1;
+	let s='';
+	for (let i = 1; i < 4; i++){
+		s = '#btn-row'+row+'-'+i;
+		ids.push(s);
+	} 
 	let ec = jQuery.Event( 'change' );
-    for (let i in idArr) {
-    	$(idArr[i])
+    for (let i in ids) {
+    	$(ids[i])
 			.parent()
 			.children('ul.dropdown-menu')
 			.on('click', (e) => {
-				$(idArr[i])
+				$(ids[i])
 				.parent()
 				.parent()
-				.children('input.form-control')
+				.children('input.form-control:first')
 				.attr('value',e.target.text)
 				//send change event
 				.trigger(ec);
@@ -192,32 +217,97 @@ const registerButton = () => {
     }
 };
 
+
+// Register Ton button
+const registerTonButton = () => {
+	let ids = [];
+	// TODO use as parameter later
+	let row = 1;
+	let s='';
+
+	for (let i = 1; i < 4; i++){
+		s = '#btn-row'+row+'-'+i+'-ton';
+		ids.push(s);
+	} 
+	// let ec = jQuery.Event( 'change' );
+    for (let i in ids) {
+    	$(ids[i])
+			.parent()
+			.children('ul.dropdown-menu')
+			.on('click', (e) => {
+				$(ids[i])
+				.parent()
+				.parent()
+				.children('input.form-control:eq( 1 )')
+				.attr('value',e.target.text);
+				
+				// do parameter change
+				// index have to survive :)
+			    let tmp = i+1+(row-1)*2;
+				tones[tmp].instrument = e.target.text;
+				//send change event
+				//.trigger(ec);
+		});	
+    }
+};
+
+const registerBlackTonButton = () => {
+	let ids = [];
+	// TODO use as parameter later
+	let row = 1;
+	let s = '#btn-row1-0-ton';
+	ids.push(s);
+	
+	// let ec = jQuery.Event( 'change' );
+    for (let i in ids) {
+    	$(ids[i])
+			.parent()
+			.children('ul.dropdown-menu')
+			.on('click', (e) => {
+				$(ids[i])
+				.parent()
+				.parent()
+				.children('input.form-control:first')
+				.attr('value',e.target.text);
+
+				tones[0].instrument = e.target.text;
+				
+				// do parameter change
+
+				//send change event
+				//.trigger(ec);
+		});	
+
+    }
+};
+
+
 const registerPlayButton = () => {
 	$('#playmusicbtn').on('click', (e) => {
-
-		if (audioContext === null){
-			try {
-    			window.AudioContext = window.AudioContext || window.webkitAudioContext;
-    			audioContext = new window.AudioContext();
-			} catch (e) {
-    			console.log("No Web Audio API support");
-			}
-			let oscillator = audioContext.createOscillator();
- 				oscillator.frequency.value = 400;
- 				oscillator.connect(audioContext.destination);
- 				oscillator.start(0);
- 				oscillator.stop(.5)
-		}
+		// iphone hack
+		// if (audioContext === null){
+		// 	try {
+  //   			window.AudioContext = window.AudioContext || window.webkitAudioContext;
+  //   			audioContext = new window.AudioContext();
+		// 	} catch (e) {
+  //   			console.log("No Web Audio API support");
+		// 	}
+		// 	let oscillator = audioContext.createOscillator();
+ 	// 			oscillator.frequency.value = 400;
+ 	// 			oscillator.connect(audioContext.destination);
+ 	// 			oscillator.start(0);
+ 	// 			oscillator.stop(.5)
+		// }
 		runSeq = true;
 		playMusic();
 		//alert('here');
 	});
-	$('#playmusicbtn').on('touchend', (e) => {
+	// $('#playmusicbtn').on('touchend', (e) => {
 
-		runSeq = true;
-		playMusic();
-		//alert('here');
-	});
+	// 	runSeq = true;
+	// 	playMusic();
+	// 	//alert('here');
+	// });
 };
 
 const registerStopButton = () => {
@@ -361,7 +451,6 @@ let tone0 = {};
 	tone0.color = '#454545';
 	tone0.hover = '#000000';
 	tone0.instrument = 'A';
-	tone0.instrumentNr = 0;
 	tone0.id = 'ig-row1-0';
 	tone0.visible = true;
 tones.push(tone0);
@@ -373,7 +462,6 @@ let tone1 = {};
 	tone1.color = '#296EAA';
 	tone1.hover = '#094E8A';
 	tone1.instrument = 'B';
-	tone1.instrumentNr = 1;
 	tone1.id = 'ig-row1-1';
 	tone1.visible = true;
 tones.push(tone1);
@@ -385,7 +473,6 @@ let tone2 = {};
 	tone2.color = '#5491B5';
 	tone2.hover = '#094E8A';
 	tone2.instrument = 'C';
-	tone2.instrumentNr = 2;
 	tone2.id = 'ig-row1-2';
 	tone2.visible = false;
 tones.push(tone2);
@@ -397,7 +484,6 @@ let tone3 = {};
 	tone3.color = '#5491B5';
 	tone3.hover = '#094E8A';
 	tone3.instrument = 'D';
-	tone3.instrumentNr = 3;
 	tone3.id = 'ig-row1-3';
 	tone3.visible = true;
 tones.push(tone3);
@@ -472,6 +558,8 @@ const playMusic = () => {
 
 	// Register Buttons
 	registerButton();
+	registerTonButton();
+	registerBlackTonButton();
 	registerInputOnChange();
 	let mydata = redraw(readInput());
 	renderGraph(mydata);
