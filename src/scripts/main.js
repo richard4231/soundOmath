@@ -243,7 +243,7 @@ const registerTonButton = () => {
 				
 				// do parameter change
 				// index have to survive :)
-			    let tmp = i+1+(row-1)*2;
+			    let tmp = parseInt(e.target.parentElement.parentElement.getAttribute('nr'));
 				tones[tmp].instrument = e.target.text;
 				//send change event
 				//.trigger(ec);
@@ -281,6 +281,72 @@ const registerBlackTonButton = () => {
     }
 };
 
+
+// Register Volumen button
+const registerVolumeButton = () => {
+	let ids = [];
+	// TODO use as parameter later
+	let row = 1;
+	let s='';
+
+	for (let i = 1; i < 4; i++){
+		s = '#btn-row'+row+'-'+i+'-volume';
+		ids.push(s);
+	} 
+	// let ec = jQuery.Event( 'change' );
+    for (let i in ids) {
+    	$(ids[i])
+			.parent()
+			.children('ul.dropdown-menu')
+			.on('click', (e) => {
+				$(ids[i])
+				.parent()
+				.parent()
+				.children('input.form-control:eq( 2 )')
+				.attr('value',e.target.text);
+				
+				// do parameter change
+				// index have to survive :)
+			    let tmp = parseInt(e.target.parentElement.parentElement.getAttribute('nr'));
+
+				tones[tmp].vol = e.target.text;
+				tones[tmp].gain = parseInt(e.target.text)*1.0/100;
+				//send change event
+				//.trigger(ec);
+		});	
+    }
+};
+
+const registerBlackVolumeButton = () => {
+	let ids = [];
+	// TODO use as parameter later
+	let row = 1;
+	let s = '#btn-row1-0-volume';
+	ids.push(s);
+	
+	// let ec = jQuery.Event( 'change' );
+    for (let i in ids) {
+    	$(ids[i])
+			.parent()
+			.children('ul.dropdown-menu')
+			.on('click', (e) => {
+				$(ids[i])
+				.parent()
+				.parent()
+				.children('input.form-control:eq( 1 )')
+				.attr('value',e.target.text);
+
+				tones[0].vol = e.target.text;
+				tones[0].gain = parseInt(e.target.text)*1.0/100;
+				
+				// do parameter change
+
+				//send change event
+				//.trigger(ec);
+		});	
+
+    }
+};
 
 const registerPlayButton = () => {
 	$('#playmusicbtn').on('click', (e) => {
@@ -561,6 +627,8 @@ const playMusic = () => {
 	registerTonButton();
 	registerBlackTonButton();
 	registerInputOnChange();
+	registerVolumeButton();
+	registerBlackVolumeButton();
 	let mydata = redraw(readInput());
 	renderGraph(mydata);
 	registerPlayButton();
