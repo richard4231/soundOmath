@@ -239,16 +239,18 @@ const registerStopButton = () => {
 // 	});
 // };
 
-$('#paraOszbtn').on('click', (e) => {
-	let s2 = $('input[name=speed]:checked', '#parameterModal').val();
-	let s = $('input[name=oszform]:checked', '#parameterModal').val();
-	//if (! typeof s === "undefined" && ! typeof s2  === "undefined"){
-	if (! false){
-		oscillatorType = s;
-		soundSpeed = parseFloat(s2);
-		$('#parameterModal').modal('hide');
-	}
-});
+
+// Parameter werte einlesen
+// $('#paraOszbtn').on('click', (e) => {
+// 	let s2 = $('input[name=speed]:checked', '#parameterModal').val();
+// 	let s = $('input[name=oszform]:checked', '#parameterModal').val();
+// 	//if (! typeof s === "undefined" && ! typeof s2  === "undefined"){
+// 	if (! false){
+// 		oscillatorType = s;
+// 		soundSpeed = parseFloat(s2);
+// 		$('#parameterModal').modal('hide');
+// 	}
+// });
 
 
 
@@ -350,7 +352,55 @@ $('body').on('touchend', (e) => {
 //IOS END
 
 
+// Sound constansts presets
+let tones = [];
+let tone0 = {};
+	tone0.nr = 0;
+	tone0.gain = 0.3;
+	tone0.vol = '30%';
+	tone0.color = '#454545';
+	tone0.hover = '#000000';
+	tone0.instrument = 'A';
+	tone0.instrumentNr = 0;
+	tone0.id = 'ig-row1-0';
+	tone0.visible = true;
+tones.push(tone0);
 
+let tone1 = {};
+	tone1.nr = 1;
+	tone1.gain = 0.8;
+	tone1.vol = '80%';
+	tone1.color = '#296EAA';
+	tone1.hover = '#094E8A';
+	tone1.instrument = 'B';
+	tone1.instrumentNr = 1;
+	tone1.id = 'ig-row1-1';
+	tone1.visible = true;
+tones.push(tone1);
+
+let tone2 = {};
+	tone2.nr = 2;
+	tone2.gain = 0.0;
+	tone2.vol = '0%';
+	tone2.color = '#5491B5';
+	tone2.hover = '#094E8A';
+	tone2.instrument = 'C';
+	tone2.instrumentNr = 2;
+	tone2.id = 'ig-row1-2';
+	tone2.visible = false;
+tones.push(tone2);
+
+let tone3 = {};
+	tone3.nr = 3;
+	tone3.gain = 0.0;
+	tone3.vol = '0%';
+	tone3.color = '#5491B5';
+	tone3.hover = '#094E8A';
+	tone3.instrument = 'D';
+	tone3.instrumentNr = 3;
+	tone3.id = 'ig-row1-3';
+	tone3.visible = true;
+tones.push(tone3);
 
 
 let soundSpeed = 0.5;
@@ -361,8 +411,6 @@ let lfofreq = 6;  //5
 // Parametrization of the 5 tones  Pitch duration volume gain
 const sounds = [[-10, 0.5,0.1],[3, 0.5,0.9],[10, 0.5,0.9],[15, 0.5,0.9],[0, 0.5,0.9]];
 let oscillatorType = 'sawtooth'; //'sine'; // 'sawtooth'
-
-
 
 
 /// Sound Methods
@@ -389,12 +437,15 @@ const playMusic = () => {
 };
 
 // Init Screen
-	const width = 1230,
-    height = 225,
-    div = d3.select('#chart'),
+	const width = 1280,
+    height = 45;
+    let sr_viewport = '0 0 '+(width+60)+' '+height;
+    const div = d3.select('#chart'),
     svg = div.append('svg')
         .attr('width', width)
-        .attr('height', height),
+        .attr('height', height)
+        .attr('viewBox', sr_viewport)
+        .attr('preserveAspectRatio', 'xMidYMid meet'),
     //grid    
     rw = 20,
     rh = 20,
@@ -406,6 +457,14 @@ const playMusic = () => {
     // lookup = ['#454545','#296EAA','#D43F3A','#5CB85C','#46B0CF'],
     // hlookup = ['#000000','#094E8A','#A41F1A','#3C983C','#2690AF'],
     rrange = lookup.length;
+
+    // responsive change
+    d3.select(window)
+    	.on("resize", () => {
+    //let targetWidth = svg.node().getBoundingClientRect().width;
+    let winWidth = $(window).width();
+    svg.attr("width", winWidth);
+  });
 
     // Build HTML
     //createHtmlTonControl('1');
