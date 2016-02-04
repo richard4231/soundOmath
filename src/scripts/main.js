@@ -25,7 +25,7 @@ $(document).ready(function(){
 // };
 
 // D3JS
-const updateGraph = (data) => {
+const updateGraph = (data,svg,lookup) => {
 	let grp = svg.selectAll('g')
 	    .data(data);
 
@@ -41,7 +41,7 @@ const updateGraph = (data) => {
 	selection.exit().remove();    
 };
 
-const renderGraph = (data) => {
+const renderGraph = (data,svg,lookup) => {
 	// Create a group for each row in the data matrix and
 	// translate the group vertically
 	let grp = svg.selectAll('g')
@@ -86,7 +86,7 @@ const renderGraph = (data) => {
 };
 
 // get values
-const getButtonIds = () => ['#btn-row1-1','#btn-row1-2','#btn-row1-3','#btn-row1-4'];
+//const getButtonIds = () => ['#btn-row1-1','#btn-row1-2','#btn-row1-3','#btn-row1-4'];
 
 // reads Parameter Ton Zahl for row one
 const readInput = () => {
@@ -413,9 +413,11 @@ const registerStopButton = () => {
 // Sound Definition
 
 
-const playSound = (startTime, pitch, duration, gain) => {
+const playSound = (startTime, pitchNr, duration, gainOld) => {
 	//let startTime = audioContext.currentTime + delay;
   	let endTime = startTime + duration;
+  	let pitch = sounds[pitchNr][0];
+  	let gain = tones[pitchNr].gain;
 
   	let outgain = audioContext.createGain();
   	outgain.gain.value = gain;
@@ -456,11 +458,13 @@ const runSequencers = () => {
 	let ct = audioContext.currentTime;
 	while (soundQueue.length>0 && soundQueue[0][0]< ct+0.15){
 		//console.log('ct:'+ct+'planed time:'+soundQueue[0][0]);
-		let tone = soundQueue.splice(0,1);
+		let item = soundQueue.splice(0,1);
 		// playsound (starttime, pitch, duration,             gaiin)
-		playSound(tone[0][0],sounds[tone[0][1]][0],tone[0][2],sounds[tone[0][1]][2]);		
+		//playSound(item[0][0],sounds[item[0][1]][0],item[0][2],tones[item[0][1]].gain);		
+	
+		playSound(item[0][0],item[0][1],item[0][2],tones[item[0][1]].gain);		
 		// element              color       duration
-		highlightEl(tone[0][3],tone[0][1],tone[0][2]);
+		highlightEl(item[0][3],item[0][1],item[0][2]);
 	}
 	setTimeout(runSequencers,90);
 }
@@ -509,50 +513,96 @@ $('body').on('touchend', (e) => {
 
 
 // Sound constansts presets
-let tones = [];
-let tone0 = {};
-	tone0.nr = 0;
-	tone0.gain = 0.3;
-	tone0.vol = '30%';
-	tone0.color = '#454545';
-	tone0.hover = '#000000';
-	tone0.instrument = 'A';
-	tone0.id = 'ig-row1-0';
-	tone0.visible = true;
-tones.push(tone0);
+let tones = [{
+	'nr':0,
+	'gain':0.1,
+	'vol':'10%',
+	'color':'#454545',
+	'hover':'#000000',
+	'instrument':'D3',
+	'id':'ig-row1-0',
+	'visible':true
+},
+{
+	'nr':1,
+	'gain':0.8,
+	'vol':'80%',
+	'color':'#296EAA',
+	'hover':'#094E8A',
+	'instrument':'E3',
+	'id':'ig-row1-1',
+	'visible':true
+},
+{
+	'nr':2,
+	'gain':0.0,
+	'vol':'0%',
+	'color':'#5491B5',
+	'hover':'#094E8A',
+	'instrument':'F3',
+	'id':'ig-row1-2',
+	'visible':false
+},
+{
+	'nr':3,
+	'gain':0.0,
+	'vol':'0%',
+	'color':'#5491B5',
+	'hover':'#094E8A',
+	'instrument':'G3',
+	'id':'ig-row1-3',
+	'visible':false
+}];
 
-let tone1 = {};
-	tone1.nr = 1;
-	tone1.gain = 0.8;
-	tone1.vol = '80%';
-	tone1.color = '#296EAA';
-	tone1.hover = '#094E8A';
-	tone1.instrument = 'B';
-	tone1.id = 'ig-row1-1';
-	tone1.visible = true;
-tones.push(tone1);
 
-let tone2 = {};
-	tone2.nr = 2;
-	tone2.gain = 0.0;
-	tone2.vol = '0%';
-	tone2.color = '#5491B5';
-	tone2.hover = '#094E8A';
-	tone2.instrument = 'C';
-	tone2.id = 'ig-row1-2';
-	tone2.visible = false;
-tones.push(tone2);
+// sounds
+let notes = {
+	'D3': {
+		'freq': 440,
+		'detune': -700
+	},
+	'E3': {
+		'freq': 440,
+		'detune': -500
+	}, 
+	'F3': {
+		'freq': 440,
+		'detune': -400
+	},
+	'G3': {
+		'freq': 440,
+		'detune': -200
+	},
+	'A4': {
+		'freq': 440,
+		'detune': 0
+	},
+	'B4': {
+		'freq': 440,
+		'detune': 200
+	},
+	'C4': {
+		'freq': 440,
+		'detune': 300
+	},
+	'D4': {
+		'freq': 440,
+		'detune': 500
+	},
+	'E4': {
+		'freq': 440,
+		'detune': 700
+	},
+	'F4': {
+		'freq': 440,
+		'detune': 800
+	},
+	'G4': {
+		'freq': 440,
+		'detune': 1000
+	}
+};
 
-let tone3 = {};
-	tone3.nr = 3;
-	tone3.gain = 0.0;
-	tone3.vol = '0%';
-	tone3.color = '#5491B5';
-	tone3.hover = '#094E8A';
-	tone3.instrument = 'D';
-	tone3.id = 'ig-row1-3';
-	tone3.visible = true;
-tones.push(tone3);
 
 
 let soundSpeed = 0.5;
@@ -561,6 +611,8 @@ let vibratogain = 0.3;
 let envelopeStartEndTime = [0.01,0.1];
 let lfofreq = 6;  //5
 // Parametrization of the 5 tones  Pitch duration volume gain
+// Debricated to be removed
+// first ist black sound
 const sounds = [[-10, 0.5,0.1],[3, 0.5,0.9],[10, 0.5,0.9],[15, 0.5,0.9],[0, 0.5,0.9]];
 let oscillatorType = 'sawtooth'; //'sine'; // 'sawtooth'
 
@@ -589,37 +641,53 @@ const playMusic = () => {
 };
 
 // Init Screen
+const initd3js = (elId) => {
 	const width = 1280,
     height = 45;
-    let sr_viewport = '0 0 '+(width+60)+' '+height;
-    const div = d3.select('#chart'),
-    svg = div.append('svg')
+    let sr_viewport = '0 0 '+(width+70)+' '+height;
+    const div = d3.select(elId),
+	svg = div.append('svg')
         .attr('width', width)
         .attr('height', height)
         .attr('viewBox', sr_viewport)
-        .attr('preserveAspectRatio', 'xMidYMid meet'),
-    //grid    
-    rw = 20,
+        .attr('preserveAspectRatio', 'xMidYMid meet');
+    // responsive change
+    d3.select(window)
+    	.on("resize", () => {
+	    //let targetWidth = svg.node().getBoundingClientRect().width;
+	    let winWidth = $(window).width();
+	    svg.attr("width", winWidth);
+  	});
+
+    return svg;
+};
+
+
+    // Constants
+
+    const rw = 20,
     rh = 20,
     rowN =1,
     colN =48,
     //colordefinition
-    lookup = ['#454545','#296EAA','#5491B5','#79BEFA','#46B0CF'],
-    hlookup = ['#000000','#094E8A','#094E8A','#094E8A','#2690AF'],
+    lookupblue = ['#454545','#296EAA','#5491B5','#79BEFA','#46B0CF'],
+    hlookup = ['#000000','#094E8A','#094E8A','#094E8A','#2690AF'];
     // lookup = ['#454545','#296EAA','#D43F3A','#5CB85C','#46B0CF'],
     // hlookup = ['#000000','#094E8A','#A41F1A','#3C983C','#2690AF'],
-    rrange = lookup.length;
+    //rrange = lookup.length;
 
-    // responsive change
-    d3.select(window)
-    	.on("resize", () => {
-    //let targetWidth = svg.node().getBoundingClientRect().width;
-    let winWidth = $(window).width();
-    svg.attr("width", winWidth);
-  });
+    // bind data and render d3js
+    const svg = initd3js('#chart');
+    let mydata = redraw(readInput());
+	renderGraph(mydata,svg,lookupblue);
 
-    // Build HTML
-    //createHtmlTonControl('1');
+    const svggreen = initd3js('#chart-2');
+    let mydataGreen = redraw(readInput());
+	renderGraph(mydataGreen,svggreen,lookupblue);
+
+    const svgred = initd3js('#chart-3');
+    let mydataRed = redraw(readInput());
+	renderGraph(mydataRed,svgred,lookupblue);	
 
 
 	// Register Buttons
@@ -629,8 +697,6 @@ const playMusic = () => {
 	registerInputOnChange();
 	registerVolumeButton();
 	registerBlackVolumeButton();
-	let mydata = redraw(readInput());
-	renderGraph(mydata);
 	registerPlayButton();
 	registerStopButton();
 	//registerParameterButton();
