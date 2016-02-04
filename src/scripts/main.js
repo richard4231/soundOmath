@@ -89,10 +89,13 @@ const renderGraph = (data,svg,lookup) => {
 //const getButtonIds = () => ['#btn-row1-1','#btn-row1-2','#btn-row1-3','#btn-row1-4'];
 
 // reads Parameter Ton Zahl for row one
-const readInput = () => {
+const readInput = (row) => {
 	let ids = [];
 	// TODO use as parameter later
-	let row = 1;
+	if (typeof row === 'undefined'){
+		alert ('row is undefined');
+	}
+	// let row = 1;
 	let s='';
 	for (let i = 1; i < 4; i++){
 		s = '#btn-row'+row+'-'+i;
@@ -160,7 +163,7 @@ const redraw = (inpstrarr) => {
 	return data;
 };
 
-
+//TODO FIX TABLES
 const highlightEl  = (el,col,time) =>{
    $(el).attr( "fill", hlookup[col]);
    setTimeout(() => {$(el).attr( "fill", lookup[col]);},time*1000);
@@ -168,10 +171,10 @@ const highlightEl  = (el,col,time) =>{
 };
 
 //CHANGE on TON Input is applied
-const registerInputOnChange = () => {
+const registerInputOnChange = (row,svg,lookup) => {
 	let ids = [];
 	// TODO use as parameter later
-	let row = 1;
+	// let row = 1;
 	let s='';
 	for (let i = 1; i < 4; i++){
 		s = '#btn-row'+row+'-'+i;
@@ -184,17 +187,17 @@ const registerInputOnChange = () => {
 			.parent()
 			.children('input.form-control')
 			.change(() => {
-				let newdata = redraw(readInput());
-				updateGraph(newdata);
+				let newdata = redraw(readInput(row));
+				updateGraph(newdata,svg,lookup);
 			});
 	}
 };
 
 // Register count Button
-const registerButton = () => {
+const registerButton = (row) => {
 	let ids = [];
 	// TODO use as parameter later
-	let row = 1;
+	//let row = 1;
 	let s='';
 	for (let i = 1; i < 4; i++){
 		s = '#btn-row'+row+'-'+i;
@@ -219,10 +222,10 @@ const registerButton = () => {
 
 
 // Register Ton button
-const registerTonButton = () => {
+const registerTonButton = (row) => {
 	let ids = [];
 	// TODO use as parameter later
-	let row = 1;
+	//let row = 1;
 	let s='';
 
 	for (let i = 1; i < 4; i++){
@@ -283,10 +286,10 @@ const registerBlackTonButton = () => {
 
 
 // Register Volumen button
-const registerVolumeButton = () => {
+const registerVolumeButton = (row) => {
 	let ids = [];
 	// TODO use as parameter later
-	let row = 1;
+	//let row = 1;
 	let s='';
 
 	for (let i = 1; i < 4; i++){
@@ -517,8 +520,8 @@ let tones = [{
 	'nr':0,
 	'gain':0.1,
 	'vol':'10%',
-	'color':'#454545',
-	'hover':'#000000',
+	// 'color':'#454545',
+	// 'hover':'#000000',
 	'instrument':'D3',
 	'id':'ig-row1-0',
 	'visible':true
@@ -527,8 +530,8 @@ let tones = [{
 	'nr':1,
 	'gain':0.8,
 	'vol':'80%',
-	'color':'#296EAA',
-	'hover':'#094E8A',
+	// 'color':'#296EAA',
+	// 'hover':'#094E8A',
 	'instrument':'E3',
 	'id':'ig-row1-1',
 	'visible':true
@@ -537,8 +540,8 @@ let tones = [{
 	'nr':2,
 	'gain':0.0,
 	'vol':'0%',
-	'color':'#5491B5',
-	'hover':'#094E8A',
+	// 'color':'#5491B5',
+	// 'hover':'#094E8A',
 	'instrument':'F3',
 	'id':'ig-row1-2',
 	'visible':false
@@ -547,13 +550,72 @@ let tones = [{
 	'nr':3,
 	'gain':0.0,
 	'vol':'0%',
-	'color':'#5491B5',
-	'hover':'#094E8A',
+	// 'color':'#5491B5',
+	// 'hover':'#094E8A',
 	'instrument':'G3',
 	'id':'ig-row1-3',
 	'visible':false
+},
+{
+	'nr':4,
+	'gain':0.5,
+	'vol':'50%',
+	// 'color':'#5491B5',
+	// 'hover':'#094E8A',
+	'instrument':'A4',
+	'id':'ig-row2-1',
+	'visible':false
+},
+{
+	'nr':5,
+	'gain':0.0,
+	'vol':'0%',
+	// 'color':'#5491B5',
+	// 'hover':'#094E8A',
+	'instrument':'B4',
+	'id':'ig-row2-2',
+	'visible':false
+},
+{
+	'nr':6,
+	'gain':0.0,
+	'vol':'0%',
+	// 'color':'#5491B5',
+	// 'hover':'#094E8A',
+	'instrument':'C4',
+	'id':'ig-row2-3',
+	'visible':false
+},
+{
+	'nr':7,
+	'gain':0.3,
+	'vol':'30%',
+	// 'color':'#5491B5',
+	// 'hover':'#094E8A',
+	'instrument':'D4',
+	'id':'ig-row3-1',
+	'visible':false
+},
+{
+	'nr':8,
+	'gain':0.0,
+	'vol':'0%',
+	// 'color':'#5491B5',
+	// 'hover':'#094E8A',
+	'instrument':'E4',
+	'id':'ig-row3-2',
+	'visible':false
+},
+{
+	'nr':9,
+	'gain':0.0,
+	'vol':'0%',
+	// 'color':'#5491B5',
+	// 'hover':'#094E8A',
+	'instrument':'F4',
+	'id':'ig-row3-3',
+	'visible':false
 }];
-
 
 // sounds
 let notes = {
@@ -651,13 +713,6 @@ const initd3js = (elId) => {
         .attr('height', height)
         .attr('viewBox', sr_viewport)
         .attr('preserveAspectRatio', 'xMidYMid meet');
-    // responsive change
-    d3.select(window)
-    	.on("resize", () => {
-	    //let targetWidth = svg.node().getBoundingClientRect().width;
-	    let winWidth = $(window).width();
-	    svg.attr("width", winWidth);
-  	});
 
     return svg;
 };
@@ -670,36 +725,64 @@ const initd3js = (elId) => {
     rowN =1,
     colN =48,
     //colordefinition
-    lookupblue = ['#454545','#296EAA','#5491B5','#79BEFA','#46B0CF'],
-    hlookup = ['#000000','#094E8A','#094E8A','#094E8A','#2690AF'];
+    lookupblue = ['#454545','#296EAA','#5491B5','#79BEFA'],
+    lookupgreen = ['#454545','#4BA84B','#547249','#1F6241'],
+    lookupred = ['#454545','#DB3833','#B30B0B','#A1123F'],
+    hlookup = ['#000000','#094E8A','#094E8A','#094E8A'];
     // lookup = ['#454545','#296EAA','#D43F3A','#5CB85C','#46B0CF'],
     // hlookup = ['#000000','#094E8A','#A41F1A','#3C983C','#2690AF'],
     //rrange = lookup.length;
 
     // bind data and render d3js
     const svg = initd3js('#chart');
-    let mydata = redraw(readInput());
+    let mydata = redraw(readInput(1));
 	renderGraph(mydata,svg,lookupblue);
 
     const svggreen = initd3js('#chart-2');
-    let mydataGreen = redraw(readInput());
-	renderGraph(mydataGreen,svggreen,lookupblue);
+    let mydataGreen = redraw(readInput(2));
+	renderGraph(mydataGreen,svggreen,lookupgreen);
 
     const svgred = initd3js('#chart-3');
-    let mydataRed = redraw(readInput());
-	renderGraph(mydataRed,svgred,lookupblue);	
+    let mydataRed = redraw(readInput(3));
+	renderGraph(mydataRed,svgred,lookupred);	
 
+	// responsive change
+    d3.select(window)
+    	.on('resize', () => {
+		    //let targetWidth = svg.node().getBoundingClientRect().width;
+		    let winWidth = $(window).width();
+		    svg.attr("width", winWidth);
+		    svggreen.attr("width", winWidth);
+		    svgred.attr("width", winWidth);
+  		});
+    //Triger resize Event
+  	let tmpw = $(window).width();
+	svg.attr('width', tmpw);
+	svggreen.attr('width', tmpw);
+	svgred.attr('width', tmpw);
 
 	// Register Buttons
-	registerButton();
-	registerTonButton();
-	registerBlackTonButton();
-	registerInputOnChange();
-	registerVolumeButton();
+	// blackbutton only one registration
 	registerBlackVolumeButton();
+	registerBlackTonButton();
+
+	// Register 3 rows V Button
+	[1,2,3].map(registerButton);
+	[1,2,3].map(registerTonButton);
+	[1,2,3].map(registerVolumeButton);
+
+
+	registerInputOnChange(1,svg,lookupblue);
+	registerInputOnChange(2,svggreen,lookupgreen);
+	registerInputOnChange(3,svgred,lookupred);
+
+
 	registerPlayButton();
 	registerStopButton();
 	//registerParameterButton();
+
+	
+
 
 	
 
