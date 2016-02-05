@@ -767,6 +767,7 @@ const initd3js = (elId) => {
 	registerBlackTonButton();
 
 	// Register 3 rows V Button
+	// TODO Check REgister Button
 	[1,2,3].map(registerButton);
 	[1,2,3].map(registerTonButton);
 	[1,2,3].map(registerVolumeButton);
