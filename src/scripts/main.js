@@ -30,7 +30,7 @@ const updateGraph = (data,svg,lookup) => {
 	    .data(data);
 
 	let selection = grp.selectAll('rect').data((d) => d)
-		.attr('fill', (d,i) => lookup[d[1]]);
+		.attr('fill', (d,i) => lookup[d]);
 
 	selection.enter()
 		.append('rect')
@@ -48,7 +48,25 @@ const renderGraph = (data,svg,lookup) => {
 	    .data(data)
 	    .enter()
 	    .append('g')
-	    .attr('transform', (d, i) => 'translate(0, ' + 54 * i + ')');
+	    .attr('transform', (d, i) => 'translate(0, ' + 54 * i + ')');  
+
+	//inner structure
+	let ingrp = grp.selectAll('g')
+	    .data((d) => d)
+	    .enter()
+	    .append('g')
+	    .filter( (d,i) => typeof d === 'object')
+	    .attr('transform', (d, i) => 'translate(' + 28 * i + ',0)');
+
+
+	ingrp.selectAll('rect')
+	    .data((d) => d)
+	    .enter()
+	    .append('rect')
+	    	.attr('x', (d, i) =>  7 * i)
+	        .attr('fill', (d,i) => lookup[d])
+	        .attr('width', 7)
+	        .attr('height', rh);  
 
 	// For each group, create a set of rectangles and bind 
 	// them to the inner array (the inner array is already
@@ -57,14 +75,15 @@ const renderGraph = (data,svg,lookup) => {
 	    .data((d) => d)
 	    .enter()
 	    .append('rect')
+	    	.filter( (d,i) => typeof d === 'number')
 	        .attr('x', (d, i) =>  28 * i)
-	        .attr('fill', (d,i) => lookup[d[1]])
+	        .attr('fill', (d,i) => lookup[d])
 	        .attr('width', rw)
 	        .attr('height', rh);     
 
 	//Modulo 10 ticks        
 	grp.selectAll('line')
-	    .data( (d) => d)
+	    .data((d) => d)
 	    .enter().append('line')
 	    .filter((d,i) => i%10===0)
   			.attr('x1',  (d, i) => 280 * i+1)
@@ -76,7 +95,7 @@ const renderGraph = (data,svg,lookup) => {
 
   	// Text 
   	grp.selectAll('text')
-	    .data( (d) => d)
+	    .data((d) => d)
 	    .enter().append('text')
 	    .filter((d,i) => i%10===0)
 	    	.attr('x', (d, i) => { return 280 * i+5; })
@@ -117,6 +136,24 @@ const readInput = (row) => {
 	return out;
 };
 
+// Reduce data from 3 arrays to one Array
+
+const reduce3data = (arrB,arrG,arrR) => {
+	let out = [];
+	let outer = [];
+	outer.push(out);
+	for(let i=0; i<arrB.length; i++){
+		let tmp = [];
+		tmp.push(arrB[i]);
+		tmp.push(arrG[i]+3);
+		tmp.push(arrR[i]+6);
+		out.push(tmp);
+	}
+	return outer;
+};
+
+
+
 // Redraw Game
 const redraw = (inpstrarr) => {
 	let inp = [];
@@ -156,7 +193,9 @@ const redraw = (inpstrarr) => {
 			} else {
 				tmp = 0;
 			}
-			row.push([t, tmp]);
+			// just array
+			row.push(tmp);
+			//row.push([t, tmp]);
 			t = t + 1;
 		}
 	}
@@ -520,18 +559,19 @@ let tones = [{
 	'nr':0,
 	'gain':0.1,
 	'vol':'10%',
-	// 'color':'#454545',
-	// 'hover':'#000000',
+    'color':'#757575',
+	'hover':'#000000',
 	'instrument':'D3',
 	'id':'ig-row1-0',
 	'visible':true
 },
+
 {
 	'nr':1,
 	'gain':0.8,
 	'vol':'80%',
-	// 'color':'#296EAA',
-	// 'hover':'#094E8A',
+	'color':'#296EAA',
+	'hover':'#094E8A',
 	'instrument':'E3',
 	'id':'ig-row1-1',
 	'visible':true
@@ -540,8 +580,8 @@ let tones = [{
 	'nr':2,
 	'gain':0.0,
 	'vol':'0%',
-	// 'color':'#5491B5',
-	// 'hover':'#094E8A',
+	'color':'#5491B5',
+	'hover':'#346175',
 	'instrument':'F3',
 	'id':'ig-row1-2',
 	'visible':false
@@ -550,18 +590,19 @@ let tones = [{
 	'nr':3,
 	'gain':0.0,
 	'vol':'0%',
-	// 'color':'#5491B5',
-	// 'hover':'#094E8A',
+	'color':'#79BEFA',
+	'hover':'#599EBA',
 	'instrument':'G3',
 	'id':'ig-row1-3',
 	'visible':false
 },
+
 {
 	'nr':4,
 	'gain':0.5,
 	'vol':'50%',
-	// 'color':'#5491B5',
-	// 'hover':'#094E8A',
+	'color':'#4BA84B',
+	'hover':'#2B882B',
 	'instrument':'A4',
 	'id':'ig-row2-1',
 	'visible':false
@@ -570,8 +611,8 @@ let tones = [{
 	'nr':5,
 	'gain':0.0,
 	'vol':'0%',
-	// 'color':'#5491B5',
-	// 'hover':'#094E8A',
+	'color':'#547249',
+	'hover':'#245219',
 	'instrument':'B4',
 	'id':'ig-row2-2',
 	'visible':false
@@ -580,8 +621,8 @@ let tones = [{
 	'nr':6,
 	'gain':0.0,
 	'vol':'0%',
-	// 'color':'#5491B5',
-	// 'hover':'#094E8A',
+	'color':'#1F6241',
+	'hover':'#1F6241',
 	'instrument':'C4',
 	'id':'ig-row2-3',
 	'visible':false
@@ -590,8 +631,8 @@ let tones = [{
 	'nr':7,
 	'gain':0.3,
 	'vol':'30%',
-	// 'color':'#5491B5',
-	// 'hover':'#094E8A',
+	'color':'#DB3833',
+	'hover':'#AB1813',
 	'instrument':'D4',
 	'id':'ig-row3-1',
 	'visible':false
@@ -600,8 +641,8 @@ let tones = [{
 	'nr':8,
 	'gain':0.0,
 	'vol':'0%',
-	// 'color':'#5491B5',
-	// 'hover':'#094E8A',
+	'color':'#B30B0B',
+	'hover':'#530B0B',
 	'instrument':'E4',
 	'id':'ig-row3-2',
 	'visible':false
@@ -610,8 +651,8 @@ let tones = [{
 	'nr':9,
 	'gain':0.0,
 	'vol':'0%',
-	// 'color':'#5491B5',
-	// 'hover':'#094E8A',
+	'color':'#A1123F',
+	'hover':'#51021F',
 	'instrument':'F4',
 	'id':'ig-row3-3',
 	'visible':false
@@ -725,9 +766,9 @@ const initd3js = (elId) => {
     rowN =1,
     colN =48,
     //colordefinition
-    lookupblue = ['#454545','#296EAA','#5491B5','#79BEFA'],
-    lookupgreen = ['#454545','#4BA84B','#547249','#1F6241'],
-    lookupred = ['#454545','#DB3833','#B30B0B','#A1123F'],
+    //lookupblue = ['#454545','#296EAA','#5491B5','#79BEFA'],
+    //lookupgreen = ['#454545','#4BA84B','#547249','#1F6241'],
+    // lookupred = ['#454545','#DB3833','#B30B0B','#A1123F'],
     hlookup = ['#000000','#094E8A','#094E8A','#094E8A'];
     // lookup = ['#454545','#296EAA','#D43F3A','#5CB85C','#46B0CF'],
     // hlookup = ['#000000','#094E8A','#A41F1A','#3C983C','#2690AF'],
@@ -735,14 +776,17 @@ const initd3js = (elId) => {
 
     // bind data and render d3js
     const svg = initd3js('#chart');
+    let lookupblue = [0,1,2,3].map((i) => tones[i].color);   
     let mydata = redraw(readInput(1));
 	renderGraph(mydata,svg,lookupblue);
 
     const svggreen = initd3js('#chart-2');
+    let lookupgreen = [0,4,5,6].map((i) => tones[i].color); 
     let mydataGreen = redraw(readInput(2));
 	renderGraph(mydataGreen,svggreen,lookupgreen);
 
     const svgred = initd3js('#chart-3');
+    let lookupred = [0,7,8,9].map((i) => tones[i].color); 
     let mydataRed = redraw(readInput(3));
 	renderGraph(mydataRed,svgred,lookupred);	
 
@@ -761,6 +805,16 @@ const initd3js = (elId) => {
 	svggreen.attr('width', tmpw);
 	svgred.attr('width', tmpw);
 
+	// sum  the data
+	let svgsum = initd3js('#chart-sum');
+	let lookupall = [0,1,2,3,4,5,6,7,8,9].map((i) => tones[i].color); 
+	//let mydatasum = [[[1,2,3],[0,4,5],[1,4],[4,9],[1,4,7],[0],[0],[0],[0],[0],[0],[0],[0],[0],[0]]];
+	
+	let mydatasum = reduce3data(mydata[0],mydataGreen[0],mydataRed[0]);
+	
+
+	renderGraph(mydatasum,svgsum,lookupall);
+
 	// Register Buttons
 	// blackbutton only one registration
 	registerBlackVolumeButton();
@@ -772,7 +826,6 @@ const initd3js = (elId) => {
 	[1,2,3].map(registerTonButton);
 	[1,2,3].map(registerVolumeButton);
 
-
 	registerInputOnChange(1,svg,lookupblue);
 	registerInputOnChange(2,svggreen,lookupgreen);
 	registerInputOnChange(3,svgred,lookupred);
@@ -781,11 +834,6 @@ const initd3js = (elId) => {
 	registerPlayButton();
 	registerStopButton();
 	//registerParameterButton();
-
-	
-
-
-	
 
 //ios hack
 // 	window.addEventListener('touchend', function() {
