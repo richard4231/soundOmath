@@ -1,28 +1,4 @@
 $(document).ready(function(){
-// create HTML stuff
-// const createHtmlTonControl = (nr) => {
-// 	const posnr = '1';
-	
-
-// 	let elContainer = 'ton-control-'+nr;
-// 	let elOutDiv = document.createElement("DIV");
-// 	elOutDiv.setAttribute("class", "col-xs-3");
-	
-// 	let elinputGroup = document.createElement("DIV");
-// 	elinputGroup.setAttribute("class", "input-group-btn"); 
-// 	elOutDiv.appendChild(elinputGroup);
-// 	// BUTTON
-// 	let textnode = document.createTextNode(" Zahl"); 
-// 	let btn = document.createElement("BUTTON");
-// 	let sid='btn-row'+nr+'-'+posnr;
-// 	btn.setAttribute("id", sid);
-// 	btn.setAttribute("class", "btn btn-info dropdown-toggle");
-// 	btn.appendChild(textnode);
-// 	elinputGroup.appendChild(btn);
-// 	document.getElementById(elContainer).appendChild(elOutDiv);
-
-
-// };
 
 // D3JS
 const updateGraph = (data,svg,lookup,checksum) => {
@@ -33,7 +9,6 @@ const updateGraph = (data,svg,lookup,checksum) => {
 
 	    let innergrp = grp.selectAll('g')
 	    .data((d) => d);
-
 
 	    innergrp
 	    .exit()
@@ -67,9 +42,6 @@ const updateGraph = (data,svg,lookup,checksum) => {
 		.attr('width', (d,i,k) =>  rw/data[0][k].length)
 		.attr('height', rh);
 
-		// rects.exit()
-		// .remove();
-
 	} else {
 		svg.selectAll('svg g rect')
 		.data(data[0])
@@ -100,7 +72,6 @@ const renderGraph = (data,svg,lookup,checksum) => {
 		    .enter()
 		    .append('g')
 		    .attr('transform', (d, i) => 'translate(' + 28 * i + ',0)');
-
 
 		ingrp.selectAll('rect')
 		    .data((d) => d)
@@ -133,7 +104,6 @@ const renderGraph = (data,svg,lookup,checksum) => {
 	    	return out;
 	    })
 	    .enter().append('line')
-	    	//.filter((d,i) => i%10===0)
   			.attr('x1',  (d, i) => 280 * i+1)
   			.attr('y1', 20)
   			.attr('x2', (d, i) => 280 * i+1)
@@ -141,7 +111,6 @@ const renderGraph = (data,svg,lookup,checksum) => {
   			.style('stroke', 'black')
   			.style('stroke-width','2px');
   
-
   	// Text 
   	grp.selectAll('text')
 	    .data((d) => {
@@ -155,7 +124,6 @@ const renderGraph = (data,svg,lookup,checksum) => {
 	    	.attr('y', '38')  
 	    	.attr('font-family', 'sans-serif') 
 	    	.text( (d, i,k) => k*40+i*10+1);
-	    	
 };
 
 // get values
@@ -210,8 +178,6 @@ const reduce3data = (arrB,arrG,arrR) => {
 	}
 	return outer;
 };
-
-
 
 // Redraw Game
 const redraw = (inpstrarr) => {
@@ -323,7 +289,6 @@ const registerButton = (row) => {
 		});	
     }
 };
-
 
 // Register Ton button
 const registerTonButton = (row) => {
