@@ -34,14 +34,41 @@ const updateGraph = (data,svg,lookup,checksum) => {
 	    let innergrp = grp.selectAll('g')
 	    .data((d) => d);
 
-		innergrp.selectAll('rect')
-		.data((d) => d)
+
+	    innergrp
+	    .exit()
+	    .remove();
+	    
+	    innergrp
+	    .enter()
+		.append('g')
+		.attr('transform', (d, i) => {
+			console.log(d,i);
+			return 'translate(' + 28 * i + ',0)'
+		});
+	    
+
+		let rects=innergrp.selectAll('rect')
+		.data((d) => d);
+		
+		rects
+		.exit()
+		.remove();
+
+		rects
 		.attr('fill', (d,i) => lookup[d])
-		.enter()
-		.append('rect')
 		.attr('x', (d, i,k) =>  rw/data[0][k].length * i)
 		.attr('width', (d,i,k) =>  rw/data[0][k].length)
-		.attr('height', rh);  
+		.attr('height', rh)
+		.enter()
+		.append('rect')
+		.attr('fill', (d,i) => lookup[d])
+		.attr('x', (d, i,k) =>  rw/data[0][k].length * i)
+		.attr('width', (d,i,k) =>  rw/data[0][k].length)
+		.attr('height', rh);
+
+		// rects.exit()
+		// .remove();
 
 	} else {
 		svg.selectAll('svg g rect')
@@ -235,9 +262,9 @@ const redraw = (inpstrarr) => {
 };
 
 //TODO FIX TABLES
-const highlightEl  = (el,col,time) =>{
-   $(el).attr( "fill", hlookup[col]);
-   setTimeout(() => {$(el).attr( "fill", lookup[col]);},time*1000);
+const highlightEl  = (el,col,time,hover) =>{
+   $(el).attr( "fill", hover);
+   setTimeout(() => {$(el).attr( "fill", col);},time*1000);
 
 };
 
@@ -497,7 +524,12 @@ const registerStopButton = () => {
 const playSound = (startTime, pitchNr, duration, gainOld) => {
 	//let startTime = audioContext.currentTime + delay;
   	let endTime = startTime + duration;
-  	let pitch = sounds[pitchNr][0];
+  	//let pitch = tones[pitchNr].instrument; 
+
+
+
+
+
   	let gain = tones[pitchNr].gain;
 
   	let outgain = audioContext.createGain();
@@ -515,7 +547,7 @@ const playSound = (startTime, pitchNr, duration, gainOld) => {
   	oscillator.connect(envelope);
 
   	oscillator.type = oscillatorType;
-  	oscillator.detune.value = pitch * 100;
+  	oscillator.detune.value = notes[tones[pitchNr].instrument].detune;
   	oscillator.frequency.value = 240;
 
 	let vibrato = audioContext.createGain();
@@ -544,8 +576,8 @@ const runSequencers = () => {
 		//playSound(item[0][0],sounds[item[0][1]][0],item[0][2],tones[item[0][1]].gain);		
 	
 		playSound(item[0][0],item[0][1],item[0][2],tones[item[0][1]].gain);		
-		// element              color       duration
-		highlightEl(item[0][3],item[0][1],item[0][2]);
+		// element              color       duration                 hovercolor
+		highlightEl(item[0][3],tones[item[0][1]].color,item[0][2],tones[item[0][1]].hover);
 	}
 	setTimeout(runSequencers,90);
 }
@@ -644,7 +676,7 @@ let tones = [{
 	'hover':'#2B882B',
 	'instrument':'A4',
 	'id':'ig-row2-1',
-	'visible':false
+	'visible':true
 },
 {
 	'nr':5,
@@ -674,7 +706,7 @@ let tones = [{
 	'hover':'#AB1813',
 	'instrument':'D4',
 	'id':'ig-row3-1',
-	'visible':false
+	'visible':true
 },
 {
 	'nr':8,
@@ -758,17 +790,31 @@ let lfofreq = 6;  //5
 const sounds = [[-10, 0.5,0.1],[3, 0.5,0.9],[10, 0.5,0.9],[15, 0.5,0.9],[0, 0.5,0.9]];
 let oscillatorType = 'sawtooth'; //'sine'; // 'sawtooth'
 
+/// Navigation
+
+const dispNavElements = (obj) => {
+	obj.map((o) => {
+		if (o.visible){
+			$('#'+o.id).show();
+		} else {
+			let el=$('#'+o.id);
+			el.hide();
+			el.children('input')[0].value='0';
+			//console.log(el.children('input')[0].value);
+		}
+	});
+};
 
 /// Sound Methods
 const playMusic = () => {
 	// fill soundQueue	
-	let rectarr = d3.selectAll('rect').data();
-	let elarr = d3.selectAll('rect')[0];
+	let rectarr = d3.select('#chart-sum').selectAll('rect').data();
+	let elarr = d3.select('#chart-sum').selectAll('rect')[0];
     let startTime = audioContext.currentTime;
     //console.log('Start'+startTime);
     soundQueue =[];
 	for (let i=0; i < rectarr.length; i++) {
-		let v = rectarr[i][1];
+		let v = rectarr[i];
 		//playSound(i,sounds[v][0],sounds[v][1],sounds[v][2]);
 		//alert(i);
 		let tmp = [];
@@ -806,6 +852,10 @@ const initd3js = (elId) => {
     colN =48;
     // hlookup = ['#000000','#094E8A','#094E8A','#094E8A'];
     
+
+    // configure display
+    dispNavElements(tones);
+
     // bind data and render d3js
     const svg = initd3js('#chart');
     let lookupblue = [0,1,2,3].map((i) => tones[i].color);   
