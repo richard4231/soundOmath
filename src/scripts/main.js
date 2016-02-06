@@ -25,18 +25,35 @@ $(document).ready(function(){
 // };
 
 // D3JS
-const updateGraph = (data,svg,lookup) => {
+const updateGraph = (data,svg,lookup,checksum) => {
 	
-	let selection =  svg.selectAll('svg g rect')
+	if (checksum){
+		let grp = svg.selectAll('svg g')
+	    .data(data);
+
+	    let innergrp = grp.selectAll('g')
+	    .data((d) => d);
+
+		innergrp.selectAll('rect')
+		.data((d) => d)
+		.attr('fill', (d,i) => lookup[d])
+		.enter()
+		.append('rect')
+		.attr('x', (d, i,k) =>  rw/data[0][k].length * i)
+		.attr('width', (d,i,k) =>  rw/data[0][k].length)
+		.attr('height', rh);  
+
+	} else {
+		svg.selectAll('svg g rect')
 		.data(data[0])
 		.attr('fill', (d,i) => lookup[d])
 		.enter()
 		.append('rect')
 	    .attr('x', (d, i) =>  28 * i)
 	    .attr('width', rw)
-	    .attr('height', rh)
-	    .remove();
-  
+	    .attr('height', rh);
+	    //.remove();
+	}
 };
 
 const renderGraph = (data,svg,lookup,checksum) => {
@@ -242,17 +259,14 @@ const registerInputOnChange = (row,svg,lookup) => {
 			.children('input.form-control')
 			.change(() => {
 				let newdata = redraw(readInput(row));
-				updateGraph(newdata,svg,lookup);
-
+				updateGraph(newdata,svg,lookup,false);
 				let mydata = redraw(readInput(1));
 				let mydataGreen = redraw(readInput(2));
 				let mydataRed = redraw(readInput(3));
 				let newdata2 = reduce3data(mydata[0],mydataGreen[0],mydataRed[0]);
 				updateGraph(newdata2,d3.select('#chart-sum'),
-					[0,1,2,3,4,5,6,7,8,9].map((i) => tones[i].color));
+					[0,1,2,3,4,5,6,7,8,9].map((i) => tones[i].color),true);
 				
-
-
 			});
 	}
 };
