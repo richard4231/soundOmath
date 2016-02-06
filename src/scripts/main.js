@@ -808,21 +808,26 @@ const dispNavElements = (obj) => {
 /// Sound Methods
 const playMusic = () => {
 	// fill soundQueue	
-	let rectarr = d3.select('#chart-sum').selectAll('rect').data();
+	let j;
+	let rectarr = d3.select('#chart-sum').select('g').selectAll('g').data();
 	let elarr = d3.select('#chart-sum').selectAll('rect')[0];
     let startTime = audioContext.currentTime;
     //console.log('Start'+startTime);
     soundQueue =[];
 	for (let i=0; i < rectarr.length; i++) {
 		let v = rectarr[i];
-		//playSound(i,sounds[v][0],sounds[v][1],sounds[v][2]);
-		//alert(i);
-		let tmp = [];
-		tmp.push(i*soundSpeed+startTime);
-		tmp.push(v);
-		tmp.push(toneduration);
-		tmp.push(elarr[i]);
-		soundQueue.push(tmp);
+			for (j=0;j<v.length;j++){
+				//playSound(i,sounds[v][0],sounds[v][1],sounds[v][2]);
+				//alert(i);
+				let tmp = [];
+				tmp.push(i*soundSpeed+startTime+j*0.0001);
+				tmp.push(v[j]);
+				tmp.push(toneduration);
+				tmp.push(elarr[i]);
+				soundQueue.push(tmp);
+
+			}
+		
 	}
 	//console.log('startsequencer'+audioContext.currentTime);
     runSequencers();
