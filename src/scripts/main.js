@@ -26,82 +26,92 @@ $(document).ready(function(){
 
 // D3JS
 const updateGraph = (data,svg,lookup) => {
-	let grp = svg.selectAll('g')
-	    .data(data);
-
-	let selection = grp.selectAll('rect').data((d) => d)
-		.attr('fill', (d,i) => lookup[d]);
-
-	selection.enter()
+	
+	let selection =  svg.selectAll('svg g rect')
+		.data(data[0])
+		.attr('fill', (d,i) => lookup[d])
+		.enter()
 		.append('rect')
 	    .attr('x', (d, i) =>  28 * i)
 	    .attr('width', rw)
-	    .attr('height', rh);
-
-	selection.exit().remove();    
+	    .attr('height', rh)
+	    .remove();
+  
 };
 
-const renderGraph = (data,svg,lookup) => {
+const renderGraph = (data,svg,lookup,checksum) => {
 	// Create a group for each row in the data matrix and
 	// translate the group vertically
-	let grp = svg.selectAll('g')
+	let grp = svg.selectAll('svg g')
 	    .data(data)
 	    .enter()
 	    .append('g')
 	    .attr('transform', (d, i) => 'translate(0, ' + 54 * i + ')');  
 
-	//inner structure
-	let ingrp = grp.selectAll('g')
-	    .data((d) => d)
-	    .enter()
-	    .append('g')
-	    .filter( (d,i) => typeof d === 'object')
-	    .attr('transform', (d, i) => 'translate(' + 28 * i + ',0)');
+	if (checksum){
+		//inner structure
+		let ingrp = grp.selectAll('g')
+			// .filter( (d,i) => typeof d[i] === 'object')
+		    .data((d) => d)
+		    .enter()
+		    .append('g')
+		    .attr('transform', (d, i) => 'translate(' + 28 * i + ',0)');
 
 
-	ingrp.selectAll('rect')
-	    .data((d) => d)
-	    .enter()
-	    .append('rect')
-	    	.attr('x', (d, i) =>  7 * i)
-	        .attr('fill', (d,i) => lookup[d])
-	        .attr('width', 7)
-	        .attr('height', rh);  
-
-	// For each group, create a set of rectangles and bind 
-	// them to the inner array (the inner array is already
-	// binded to the group)
-	grp.selectAll('rect')
-	    .data((d) => d)
-	    .enter()
-	    .append('rect')
-	    	.filter( (d,i) => typeof d === 'number')
-	        .attr('x', (d, i) =>  28 * i)
-	        .attr('fill', (d,i) => lookup[d])
-	        .attr('width', rw)
-	        .attr('height', rh);     
+		ingrp.selectAll('rect')
+		    .data((d) => d)
+		    .enter()
+		    .append('rect')
+		    	.attr('x', (d, i,k) =>  rw/data[0][k].length * i)
+		        .attr('fill', (d,i) => lookup[d])
+		        .attr('width', (d,i,k) =>  rw/data[0][k].length)
+		        .attr('height', rh);  
+	} else {
+		// For each group, create a set of rectangles and bind 
+		// them to the inner array (the inner array is already
+		// binded to the group)
+		grp.selectAll('rect')
+			// .filter( (d,i) => typeof d[i] === 'number')
+		    .data((d) => d)
+		    .enter()
+		    .append('rect')
+		        .attr('x', (d, i) =>  28 * i)
+		        .attr('fill', (d,i) => lookup[d])
+		        .attr('width', rw)
+		        .attr('height', rh);     
+	}
 
 	//Modulo 10 ticks        
 	grp.selectAll('line')
-	    .data((d) => d)
+	    .data((d) => {
+	    	let tmp = Math.trunc(d.length / 10);
+	    	let out = new Array(tmp+1).fill(0);
+	    	return out;
+	    })
 	    .enter().append('line')
-	    .filter((d,i) => i%10===0)
+	    	//.filter((d,i) => i%10===0)
   			.attr('x1',  (d, i) => 280 * i+1)
   			.attr('y1', 20)
   			.attr('x2', (d, i) => 280 * i+1)
   			.attr('y2',40)
   			.style('stroke', 'black')
-  			.style('stroke-width','2px');      
+  			.style('stroke-width','2px');
+  
 
   	// Text 
   	grp.selectAll('text')
-	    .data((d) => d)
+	    .data((d) => {
+	    	let tmp = Math.trunc(d.length / 10);
+	    	let out = new Array(tmp+1).fill(0);
+	    	return out;
+	    })
 	    .enter().append('text')
-	    .filter((d,i) => i%10===0)
+	    //.filter((d,i) => i%10===0)
 	    	.attr('x', (d, i) => { return 280 * i+5; })
 	    	.attr('y', '38')  
 	    	.attr('font-family', 'sans-serif') 
-	    	.text( (d, i,k) => k*40+i*10+1); 
+	    	.text( (d, i,k) => k*40+i*10+1);
+	    	
 };
 
 // get values
@@ -142,12 +152,17 @@ const reduce3data = (arrB,arrG,arrR) => {
 	let out = [];
 	let outer = [];
 	outer.push(out);
+	let tmp,s;
 	for(let i=0; i<arrB.length; i++){
-		let tmp = [];
+		tmp = [];
 		tmp.push(arrB[i]);
-		tmp.push(arrG[i]+3);
-		tmp.push(arrR[i]+6);
-		out.push(tmp);
+		tmp.push(arrG[i]===0 ? 0 : arrG[i] + 3);
+		tmp.push(arrR[i]===0 ? 0 : arrR[i] + 6);
+		s = new Set(tmp);
+		if (s.size > 1 && s.has(0)){
+			s.delete(0);
+		}
+		out.push(Array.from(s));
 	}
 	return outer;
 };
@@ -228,6 +243,16 @@ const registerInputOnChange = (row,svg,lookup) => {
 			.change(() => {
 				let newdata = redraw(readInput(row));
 				updateGraph(newdata,svg,lookup);
+
+				let mydata = redraw(readInput(1));
+				let mydataGreen = redraw(readInput(2));
+				let mydataRed = redraw(readInput(3));
+				let newdata2 = reduce3data(mydata[0],mydataGreen[0],mydataRed[0]);
+				updateGraph(newdata2,d3.select('#chart-sum'),
+					[0,1,2,3,4,5,6,7,8,9].map((i) => tones[i].color));
+				
+
+
 			});
 	}
 };
@@ -764,31 +789,30 @@ const initd3js = (elId) => {
     const rw = 20,
     rh = 20,
     rowN =1,
-    colN =48,
-    //colordefinition
-    //lookupblue = ['#454545','#296EAA','#5491B5','#79BEFA'],
-    //lookupgreen = ['#454545','#4BA84B','#547249','#1F6241'],
-    // lookupred = ['#454545','#DB3833','#B30B0B','#A1123F'],
-    hlookup = ['#000000','#094E8A','#094E8A','#094E8A'];
-    // lookup = ['#454545','#296EAA','#D43F3A','#5CB85C','#46B0CF'],
-    // hlookup = ['#000000','#094E8A','#A41F1A','#3C983C','#2690AF'],
-    //rrange = lookup.length;
-
+    colN =48;
+    // hlookup = ['#000000','#094E8A','#094E8A','#094E8A'];
+    
     // bind data and render d3js
     const svg = initd3js('#chart');
     let lookupblue = [0,1,2,3].map((i) => tones[i].color);   
     let mydata = redraw(readInput(1));
-	renderGraph(mydata,svg,lookupblue);
+	renderGraph(mydata,svg,lookupblue,false);
 
     const svggreen = initd3js('#chart-2');
     let lookupgreen = [0,4,5,6].map((i) => tones[i].color); 
     let mydataGreen = redraw(readInput(2));
-	renderGraph(mydataGreen,svggreen,lookupgreen);
+	renderGraph(mydataGreen,svggreen,lookupgreen,false);
 
     const svgred = initd3js('#chart-3');
     let lookupred = [0,7,8,9].map((i) => tones[i].color); 
     let mydataRed = redraw(readInput(3));
-	renderGraph(mydataRed,svgred,lookupred);	
+	renderGraph(mydataRed,svgred,lookupred,false);	
+
+	// sum  the data  
+	const svgsum = initd3js('#chart-sum');
+	let lookupall = [0,1,2,3,4,5,6,7,8,9].map((i) => tones[i].color); 
+	let mydatasum = reduce3data(mydata[0],mydataGreen[0],mydataRed[0]);
+	renderGraph(mydatasum,svgsum,lookupall,true);
 
 	// responsive change
     d3.select(window)
@@ -798,22 +822,20 @@ const initd3js = (elId) => {
 		    svg.attr("width", winWidth);
 		    svggreen.attr("width", winWidth);
 		    svgred.attr("width", winWidth);
+		    svgsum.attr("width", winWidth);
   		});
     //Triger resize Event
   	let tmpw = $(window).width();
 	svg.attr('width', tmpw);
 	svggreen.attr('width', tmpw);
 	svgred.attr('width', tmpw);
+	svgsum.attr("width", tmpw);
 
-	// sum  the data
-	let svgsum = initd3js('#chart-sum');
-	let lookupall = [0,1,2,3,4,5,6,7,8,9].map((i) => tones[i].color); 
-	//let mydatasum = [[[1,2,3],[0,4,5],[1,4],[4,9],[1,4,7],[0],[0],[0],[0],[0],[0],[0],[0],[0],[0]]];
-	
-	let mydatasum = reduce3data(mydata[0],mydataGreen[0],mydataRed[0]);
 	
 
-	renderGraph(mydatasum,svgsum,lookupall);
+	// let svgtest = initd3js('#chart-test');
+	// let mydatatest = [[[1,2,3],[0,4,5],[1,4],[4,9],[1,4,7],[0],[0],[0],[0],[0],[0],[0],[0],[0],[0]]];
+	// renderGraph(mydatatest,svgtest,lookupall);
 
 	// Register Buttons
 	// blackbutton only one registration
