@@ -293,7 +293,6 @@ const registerInputOnChange = (row,svg,lookup) => {
 				let newdata2 = reduce3data(mydata[0],mydataGreen[0],mydataRed[0]);
 				updateGraph(newdata2,d3.select('#chart-sum'),
 					[0,1,2,3,4,5,6,7,8,9].map((i) => tones[i].color),true);
-				
 			});
 	}
 };
@@ -329,133 +328,93 @@ const registerButton = (row) => {
 // Register Ton button
 const registerTonButton = (row) => {
 	let ids = [];
-	// TODO use as parameter later
-	//let row = 1;
 	let s='';
 
 	for (let i = 1; i < 4; i++){
 		s = '#btn-row'+row+'-'+i+'-ton';
 		ids.push(s);
 	} 
-	// let ec = jQuery.Event( 'change' );
     for (let i in ids) {
     	$(ids[i])
 			.parent()
 			.children('ul.dropdown-menu')
 			.on('click', (e) => {
-				$(ids[i])
-				.parent()
-				.parent()
-				.children('input.form-control:eq( 1 )')
-				.attr('value',e.target.text);
-				
-				// do parameter change
 				// index have to survive :)
-			    let tmp = parseInt(e.target.parentElement.parentElement.getAttribute('nr'));
-				tones[tmp].instrument = e.target.text;
-				//send change event
-				//.trigger(ec);
+			    let nr = parseInt(e.target.parentElement.parentElement.getAttribute('nr'));
+				tones[nr].instrument = e.target.text;
+				updateInput(tones,nr);
 		});	
     }
 };
-
+//Register first Black Button
 const registerBlackTonButton = () => {
 	let ids = [];
-	// TODO use as parameter later
 	let row = 1;
 	let s = '#btn-row1-0-ton';
 	ids.push(s);
-	
-	// let ec = jQuery.Event( 'change' );
     for (let i in ids) {
     	$(ids[i])
 			.parent()
 			.children('ul.dropdown-menu')
 			.on('click', (e) => {
-				$(ids[i])
-				.parent()
-				.parent()
-				.children('input.form-control:first')
-				.attr('value',e.target.text);
-
 				tones[0].instrument = e.target.text;
-				
-				// do parameter change
-
-				//send change event
-				//.trigger(ec);
+				updateInput(tones,0);
 		});	
-
     }
 };
-
-
 // Register Volumen button
 const registerVolumeButton = (row) => {
 	let ids = [];
-	// TODO use as parameter later
-	//let row = 1;
 	let s='';
-
 	for (let i = 1; i < 4; i++){
 		s = '#btn-row'+row+'-'+i+'-volume';
 		ids.push(s);
 	} 
-	// let ec = jQuery.Event( 'change' );
+	let ec = jQuery.Event( 'change' );
     for (let i in ids) {
     	$(ids[i])
 			.parent()
 			.children('ul.dropdown-menu')
 			.on('click', (e) => {
-				$(ids[i])
-				.parent()
-				.parent()
-				.children('input.form-control:eq( 2 )')
-				.attr('value',e.target.text);
-				
-				// do parameter change
-				// index have to survive :)
-			    let tmp = parseInt(e.target.parentElement.parentElement.getAttribute('nr'));
-
-				tones[tmp].vol = e.target.text;
-				tones[tmp].gain = parseInt(e.target.text)*1.0/100;
-				//send change event
-				//.trigger(ec);
+				let nr =parseInt(e.target.parentElement.parentElement.getAttribute('nr'));
+				tones[nr].vol = e.target.text;
+				tones[nr].gain = parseInt(e.target.text)*1.0/100;
+				updateInput(tones,nr);
 		});	
     }
 };
-
+// Register First Gray Button
 const registerBlackVolumeButton = () => {
 	let ids = [];
-	// TODO use as parameter later
 	let row = 1;
 	let s = '#btn-row1-0-volume';
 	ids.push(s);
-	
-	// let ec = jQuery.Event( 'change' );
     for (let i in ids) {
     	$(ids[i])
 			.parent()
 			.children('ul.dropdown-menu')
 			.on('click', (e) => {
-				$(ids[i])
-				.parent()
-				.parent()
-				.children('input.form-control:eq( 1 )')
-				.attr('value',e.target.text);
-
 				tones[0].vol = e.target.text;
 				tones[0].gain = parseInt(e.target.text)*1.0/100;
-				
-				// do parameter change
-
-				//send change event
-				//.trigger(ec);
+				updateInput(tones,0);
 		});	
-
     }
 };
-
+const updateInput = (obj,nr) => {
+	let iel = $('#'+obj[nr].id).children('input');
+	if (nr>0) {
+		iel[1].value = obj[nr].instrument;
+		iel[2].value = obj[nr].vol;
+	} else {
+		iel[0].value = obj[nr].instrument;
+		iel[1].value = obj[nr].vol;
+	}
+};
+const syncFormDisplay = (obj) => {
+	for (let i = 0; i < obj.length; i++){
+		updateInput(obj,i);
+	}
+};
 const registerPlayButton = () => {
 	$('#playmusicbtn').on('click', (e) => {
 		// iphone hack
@@ -525,11 +484,6 @@ const playSound = (startTime, pitchNr, duration, gainOld) => {
 	//let startTime = audioContext.currentTime + delay;
   	let endTime = startTime + duration;
   	//let pitch = tones[pitchNr].instrument; 
-
-
-
-
-
   	let gain = tones[pitchNr].gain;
 
   	let outgain = audioContext.createGain();
@@ -613,14 +567,14 @@ $('body').on('touchend', (e) => {
 		source.noteOn(0);
 	}
 	
-	// var src = null;
-	// src = audioContext.createOscillator();
-	// src.type = 'square';
-	// src.frequency.value = 440;
-	// src.connect(audioContext.destination);
-	// let ct = audioContext.currentTime;
-	// src.start(ct+0.5);
-	// src.stop(ct+1.2);
+	var src = null;
+	src = audioContext.createOscillator();
+	src.type = 'square';
+	src.frequency.value = 440;
+	src.connect(audioContext.destination);
+	let ct = audioContext.currentTime;
+	src.start(ct+0.5);
+	src.stop(ct+0.9);
 });
 //IOS END
 
@@ -823,7 +777,7 @@ const playMusic = () => {
 				tmp.push(i*soundSpeed+startTime+j*0.0001);
 				tmp.push(v[j]);
 				tmp.push(toneduration);
-				tmp.push(d3.select(elarr[i]).selectAll('rect')[j]);
+				tmp.push(d3.select(elarr[i]).selectAll('rect')[0][j]);
 				soundQueue.push(tmp);
 
 			}
@@ -860,6 +814,7 @@ const initd3js = (elId) => {
 
     // configure display
     dispNavElements(tones);
+    syncFormDisplay(tones);
 
     // bind data and render d3js
     const svg = initd3js('#chart');
