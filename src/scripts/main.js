@@ -810,7 +810,7 @@ const playMusic = () => {
 	// fill soundQueue	
 	let j;
 	let rectarr = d3.select('#chart-sum').select('g').selectAll('g').data();
-	let elarr = d3.select('#chart-sum').selectAll('rect')[0];
+	let elarr = d3.select('#chart-sum').select('g').selectAll('g')[0];
     let startTime = audioContext.currentTime;
     //console.log('Start'+startTime);
     soundQueue =[];
@@ -823,7 +823,7 @@ const playMusic = () => {
 				tmp.push(i*soundSpeed+startTime+j*0.0001);
 				tmp.push(v[j]);
 				tmp.push(toneduration);
-				tmp.push(elarr[i]);
+				tmp.push(d3.select(elarr[i]).selectAll('rect')[j]);
 				soundQueue.push(tmp);
 
 			}

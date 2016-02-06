@@ -21,12 +21,17 @@ sounding math app
 #Roadmap
 
 ### version 0.3 
+- speed functions
+- button checks
 - iOS fix
 - tests automatization
 - performance tests and optimazion
 
 ### version 0.4
 - Reduce and Extend the menue
+- new sounds
+- endless flow from the left
+- mobile optimization
 
 ### version 0.5 
 - Documentation 
