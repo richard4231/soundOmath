@@ -365,16 +365,27 @@ const registerBlackVolumeButton = () => {
 		});	
     }
 };
+
 const updateInput = (obj,nr) => {
 	let iel = $('#'+obj[nr].id).children('input');
 	if (nr>0) {
 		iel[1].value = obj[nr].instrument;
 		iel[2].value = obj[nr].vol;
 	} else {
-		iel[0].value = obj[nr].instrument;
-		iel[1].value = obj[nr].vol;
+		//iel[0].value = obj[nr].instrument;
+		//iel[1].value = obj[nr].vol;
+		let btn = $('#'+'btn-row1-0-ton');
+		let txt = ' '+obj[nr].instrument;
+		if (btn.children().length < 2) {
+			let el = document.createElement('span');
+			el.appendChild(document.createTextNode(txt));
+			btn.append(el);
+		} else {
+			btn.children().last().text(txt);
+		}
 	}
 };
+
 const syncFormDisplay = (obj) => {
 	for (let i = 0; i < obj.length; i++){
 		updateInput(obj,i);
@@ -538,8 +549,10 @@ $('body').on('touchend', (e) => {
 	src.frequency.value = 440;
 	src.connect(audioContext.destination);
 	let ct = audioContext.currentTime;
-	src.start(ct+0.5);
-	src.stop(ct+0.9);
+	src.start(ct+0.02);
+	src.stop(ct+0.05);
+	$('body').on('touchend', (e) => {});
+
 });
 //IOS END
 
