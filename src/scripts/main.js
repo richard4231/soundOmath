@@ -313,19 +313,13 @@ const registerTonButton = (row) => {
 };
 //Register first Black Button
 const registerBlackTonButton = () => {
-	let ids = [];
-	let row = 1;
-	let s = '#btn-row1-0-ton';
-	ids.push(s);
-    for (let i in ids) {
-    	$(ids[i])
-			.parent()
-			.children('ul.dropdown-menu')
-			.on('click', (e) => {
-				tones[0].instrument = e.target.text;
-				updateInput(tones,0);
+    $('#btn-row0-0-ton')
+		.parent()
+		.children('ul.dropdown-menu')
+		.on('click', (e) => {
+			tones[0].instrument = e.target.text;
+			updateInput(tones,0);
 		});	
-    }
 };
 // Register Volumen button
 const registerVolumeButton = (row) => {
@@ -335,7 +329,7 @@ const registerVolumeButton = (row) => {
 		s = '#btn-row'+row+'-'+i+'-volume';
 		ids.push(s);
 	} 
-	let ec = jQuery.Event( 'change' );
+	// let ec = jQuery.Event( 'change' );
     for (let i in ids) {
     	$(ids[i])
 			.parent()
@@ -348,42 +342,49 @@ const registerVolumeButton = (row) => {
 		});	
     }
 };
+
 // Register First Gray Button
 const registerBlackVolumeButton = () => {
-	let ids = [];
-	let row = 1;
-	let s = '#btn-row1-0-volume';
-	ids.push(s);
-    for (let i in ids) {
-    	$(ids[i])
-			.parent()
-			.children('ul.dropdown-menu')
-			.on('click', (e) => {
-				tones[0].vol = e.target.text;
-				tones[0].gain = parseInt(e.target.text)*1.0/100;
-				updateInput(tones,0);
+	$('#btn-row0-0-volume')
+		.parent()
+		.children('ul.dropdown-menu')
+		.on('click', (e) => {
+			tones[0].vol = e.target.text;
+			tones[0].gain = parseInt(e.target.text)*1.0/100;
+			updateInput(tones,0);
 		});	
-    }
+};
+
+const changeTextInLastSpan = (sEl,txt) => {
+	if (sEl.children().length < 2) {
+			let el = document.createElement('span');
+			el.appendChild(document.createTextNode(txt));
+			sEl.append(el);
+		} else {
+			sEl.children().last().text(txt);
+		}
 };
 
 const updateInput = (obj,nr) => {
-	let iel = $('#'+obj[nr].id).children('input');
-	if (nr>0) {
-		iel[1].value = obj[nr].instrument;
-		iel[2].value = obj[nr].vol;
+	//let iel = $('#'+obj[nr].id).children('input');
+	let rownr,id;
+	if (nr<1){
+		rownr = 0;
+		id = nr;
 	} else {
-		//iel[0].value = obj[nr].instrument;
-		//iel[1].value = obj[nr].vol;
-		let btn = $('#'+'btn-row1-0-ton');
-		let txt = ' '+obj[nr].instrument;
-		if (btn.children().length < 2) {
-			let el = document.createElement('span');
-			el.appendChild(document.createTextNode(txt));
-			btn.append(el);
-		} else {
-			btn.children().last().text(txt);
-		}
+		rownr = Math.trunc((nr-1)/3) + 1;
+		id = (nr-1)%3+1;
 	}
+
+	let btn = $('#'+'btn-row'+rownr+'-'+id+'-ton');
+	let txt = ' '+obj[nr].instrument;
+	changeTextInLastSpan(btn,txt);
+
+
+	btn = $('#'+'btn-row'+rownr+'-'+id+'-volume');
+	txt = ' '+obj[nr].vol;
+	changeTextInLastSpan(btn,txt);
+	// }
 };
 
 const syncFormDisplay = (obj) => {
@@ -552,30 +553,26 @@ $('body').on('touchend', (e) => {
 	src.start(ct+0.02);
 	src.stop(ct+0.05);
 	$('body').on('touchend', (e) => {});
-
 });
 //IOS END
-
-
 // Sound constansts presets
 let tones = [{
 	'nr':0,
-	'gain':0.1,
-	'vol':'10%',
+	'gain':0.2,
+	'vol':'20%',
     'color':'#757575',
 	'hover':'#000000',
 	'instrument':'D3',
 	'id':'ig-row1-0',
 	'visible':true
 },
-
 {
 	'nr':1,
 	'gain':0.8,
-	'vol':'80%',
+	'vol':'20%',
 	'color':'#296EAA',
 	'hover':'#094E8A',
-	'instrument':'E3',
+	'instrument':'A4',
 	'id':'ig-row1-1',
 	'visible':true
 },
@@ -603,10 +600,10 @@ let tones = [{
 {
 	'nr':4,
 	'gain':0.5,
-	'vol':'50%',
+	'vol':'40%',
 	'color':'#4BA84B',
 	'hover':'#2B882B',
-	'instrument':'A4',
+	'instrument':'D4',
 	'id':'ig-row2-1',
 	'visible':true
 },
@@ -633,10 +630,10 @@ let tones = [{
 {
 	'nr':7,
 	'gain':0.3,
-	'vol':'30%',
+	'vol':'80%',
 	'color':'#DB3833',
 	'hover':'#AB1813',
-	'instrument':'D4',
+	'instrument':'G4',
 	'id':'ig-row3-1',
 	'visible':true
 },
@@ -709,8 +706,6 @@ let notes = {
 	}
 };
 
-
-
 let soundSpeed = 0.5;
 let toneduration = 0.3;
 let vibratogain = 0.3;
@@ -731,7 +726,11 @@ const dispNavElements = (obj) => {
 		} else {
 			let el=$('#'+o.id);
 			el.hide();
-			el.children('input')[0].value='0';
+			// TODO reset INPUT
+			if (typeof el.children('input')[0] !== 'undefined'){
+				el.children('input')[0].value=0;
+			}
+			
 			//console.log(el.children('input')[0].value);
 		}
 	});
@@ -757,9 +756,7 @@ const playMusic = () => {
 				tmp.push(toneduration);
 				tmp.push(d3.select(elarr[i]).selectAll('rect')[0][j]);
 				soundQueue.push(tmp);
-
 			}
-		
 	}
 	//console.log('startsequencer'+audioContext.currentTime);
     runSequencers();
@@ -780,9 +777,7 @@ const initd3js = (elId) => {
     return svg;
 };
 
-
     // Constants
-
     const rw = 20,
     rh = 20,
     rowN =1,
