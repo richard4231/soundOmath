@@ -464,23 +464,19 @@ const registerButton = (row) => {
 	// TODO use as parameter later
 	//let row = 1;
 	let s='';
+	let tmpEl;
 	for (let i = 1; i < 4; i++){
 		s = '#btn-row'+row+'-'+i;
 		ids.push(s);
 	} 
-	let ec = jQuery.Event('change');
+	
     for (let i in ids) {
-    	$(ids[i])
-			.parent()
-			.children('ul.dropdown-menu')
-			.on('click', (e) => {
-				$(this)
-				.parent()
-				.parent()
-				.children('input.form-control:first')
-				.attr('value',e.target.text)
-				//send change event
-				.trigger(ec);
+    	tmpEl = $(ids[i]).parent().children('ul.dropdown-menu');
+    	$(tmpEl).on('click', (e) => {
+			let inpEl = e.target.parentElement.parentElement.parentElement.parentElement.children[1];
+			inpEl.setAttribute('value',e.target.text);
+			$(inpEl).val(e.target.text);
+			$(inpEl).trigger(jQuery.Event('change'));
 		});	
     }
 };
