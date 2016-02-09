@@ -21,19 +21,23 @@ sounding math app
 #Roadmap
 
 ### version 0.3 
+- code documentation
 - speed functions
-- button checks
+- dynamic buttons
+- Reduce and Extend the menue
 - iOS fix
 - tests automatization
 - performance tests and optimazion
 
 ### version 0.4
-- Reduce and Extend the menue
 - new sounds
 - endless flow from the left
 - mobile optimization
 
 ### version 0.5 
+- Evaluation of interaction
+- when should changes affect ?
+- Pause Button / Change Button
 - Documentation 
 
 ### version 0.6
