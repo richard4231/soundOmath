@@ -110,11 +110,11 @@
       "ios 6",
       "android 4"
     ],
-    "prodURL": "http://domain.tld",
+    "prodURL": "http://mgje.github.io/soundOmath/",
     "shareImageURL": "http://domain.tld/share/image.png",
     "twitterHandle": "@mgje",
     "analyticsUA": "UA-XXXXX-X",
-    "developerURL": ""
+    "developerURL": "http://mgje.github.io"
   },
   "extensions": {
     "scripts": "js",
