@@ -808,7 +808,7 @@ const updateScreen = () => {
 };
 
 const updateScreenPlusElement = () => {
-	let nr,s;
+	let nr,s,tmp,el,inpEl;
 	for (let i=1; i<4; i++){
 		nr = nrOfActiveBttnGroup(i);
 		switch(nr){
@@ -817,6 +817,19 @@ const updateScreenPlusElement = () => {
 				changeScreenbttn(s,screenView.addbttn,'+'+i);
 				$('#'+s).show();
 				$('#btn-row'+i+'-3-add').hide();
+				tmp = i*3;
+				el=$('#'+tones[tmp].id);
+				if (typeof el.children('input')[0] !== 'undefined'){
+					inpEl = el.children('input')[0];
+					inpEl.value=0;
+					$(inpEl).trigger(jQuery.Event('change'));
+				}
+				el=$('#'+tones[tmp-1].id);
+				if (typeof el.children('input')[0] !== 'undefined'){
+					inpEl = el.children('input')[0];
+					inpEl.value=0;
+					$(inpEl).trigger(jQuery.Event('change'));
+				}
 				break;
 			case 2:
 				s = 'btn-row'+i+'-2-add';
@@ -825,6 +838,13 @@ const updateScreenPlusElement = () => {
 				s = 'btn-row'+i+'-3-add';
 				changeScreenbttn(s,screenView.addbttn,'+'+i);
 				$('#'+s).show();
+				tmp = i*3;
+				el=$('#'+tones[tmp].id);
+				if (typeof el.children('input')[0] !== 'undefined'){
+					inpEl = el.children('input')[0];
+					inpEl.value=0;
+					$(inpEl).trigger(jQuery.Event('change'));
+				}
 				break;
 			case 3:
 				$('#btn-row'+i+'-2-add').hide(); 

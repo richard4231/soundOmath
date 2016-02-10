@@ -1,37 +1,44 @@
 # soundOmath
-sounding math app
+Sound o Math is an experimental approach 
+to combine mathematics an musical patterns.
+Our aim is to build a mashine which can 
+visualisize and play diffrent quind of number 
+patterns. 
 
-# versions
+# Versions
 
-### version 0.2
-- full integration and display of all interacton element
-- first color definition (styles/my-custom-styles)
-- reduce function from 3 patterns -> 1
+### Version 0.3 
+- Code documentation
+- Dynamic horizontal buttons
+- IOS fix 1
 
-### version 0.1
-- used ES6 
-- bootstrap with a special template
-- gulp automation with
-	- babel ES6 compability
+### ToDo:
+- Speed change functions
+- Dynamic vertical buttons
+- Automatic Tests 
+- Performance Tests and optimazion
+
+
+### Version 0.2
+- Full integration and display of all interacton element
+- First color definition (styles/my-custom-styles)
+- Reduce function from 3 patterns -> 1
+
+### Version 0.1
+- Usage of ES6 boilerplate framework for gulp 
+- Bootstrap with a special template
+- Gulp automation with
+	- Babel ES6 compability
 	- SASS 
 	- JavaScript concatination (uglify)
-	- parallel browser test with (browsersync)
-- simple Mockup with sound and d3.js integration
+	- Parallel browser test with (browsersync)
+- First Mockup with sound and d3.js integration
 
-#Roadmap
-
-### version 0.3 
-- code documentation
-- speed functions
-- dynamic buttons
-- Reduce and Extend the menue
-- iOS fix
-- tests automatization
-- performance tests and optimazion
+# Roadmap
 
 ### version 0.4
 - new sounds
-- endless flow from the left
+- new visualization endless flow from the left
 - mobile optimization
 
 ### version 0.5 
