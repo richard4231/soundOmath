@@ -155,10 +155,13 @@ let notes = {
 let screenView = {
 	'1' : {
 		'visible' 	: true,
+		'graph'		: 'chart',
 		'data'		: true
+
 	},
 	'2'	: {
 		'visible'  	: true,
+		'graph'		: 'chart-2',
 		'addrow'	: false,
 		'minrow'	: false,
 		'data'		: true,
@@ -166,12 +169,15 @@ let screenView = {
 	}, 
 	'3'	: {
 		'visible'  	: true,
+		'graph'		: 'chart-3',
 		'addrow'	: false,
 		'redrow'	: false,
 		'data'		: true,
 		'changerowid' : 'addrow3'
 	},
 	'4'	: {
+		'visible'  	: true,
+		'graph'		: 'chart-sum',
 		'data'		: true
 	},
 	'archild' 		: '<div><i class="fa fa-plus-square"></i><span>Ton-Zahlenreihe</span></div>',
@@ -184,15 +190,22 @@ let screenView = {
 // ----------------------------------------------------------
 // Model End
 
+	const range = (begin, end, interval = 1) => {
+		let out = [];
+		for (let i = begin; i < end; i += interval) {
+         	out.push(i);
+     	}
+     	return out;
+	};
 
 // ----------------------------------------------------------
 // Visual D3JS Start
 
 // Constants for D3JS
-const rw = 20,
-rh = 20,
-rowN =1,
-colN =48;
+const rw = 20, // rect width
+rh = 20, // rect height
+rowN =1, // number of rows
+colN =48; // number of columns
 
 // Main visual D3 update function
 const updateGraph = (data,svg,lookup,checksum) => {
@@ -322,6 +335,8 @@ const renderGraph = (data,svg,lookup,checksum) => {
 // Visual D3JS End
 
 
+
+
 // User Interactions
 // reads Parameter Ton Zahl for row one
 const readInput = (row) => {
@@ -355,6 +370,7 @@ const readInput = (row) => {
 // Sum all rows together
 // Reduce data from 3 arrays to one Array
 const reduce3data = (arrB,arrG,arrR) => {
+	//console.log(arrB,arrG,arrR);
 	let out = [];
 	let outer = [];
 	outer.push(out);
@@ -389,6 +405,7 @@ const redraw = (inpstrarr) => {
 		nextEvent,
 		tmp = 0;
 
+	// determine the start value;
 	for (let i = 0; i < inp.length; i++){
 		col = i;
 		nextEvent = inp[col];
@@ -452,7 +469,7 @@ const registerInputOnChange = (row,svg,lookup) => {
 				let mydataGreen = redraw(readInput(2));
 				let mydataRed = redraw(readInput(3));
 				let newdata2 = reduce3data(mydata[0],mydataGreen[0],mydataRed[0]);
-				updateGraph(newdata2,d3.select('#chart-sum'),
+				updateGraph(newdata2,svgList[3],
 					[0,1,2,3,4,5,6,7,8,9].map((i) => tones[i].color),true);
 			});
 	}
@@ -724,8 +741,8 @@ try {
 $('body').on('touchend', (e) => {
 	//alert('start sound
 	// create empty buffer
-	var buffer = audioContext.createBuffer(1, 1, 22050);
-	var source = audioContext.createBufferSource();
+	let buffer = audioContext.createBuffer(1, 1, 22050);
+	let source = audioContext.createBufferSource();
 	source.buffer = buffer;
 
 	// connect to output (your speakers)
@@ -735,16 +752,16 @@ $('body').on('touchend', (e) => {
 	if (typeof source.noteOn !== 'undefined'){
 		source.noteOn(0);
 	}
-	
-	var src = null;
+	let src = null;
 	src = audioContext.createOscillator();
 	src.type = 'square';
 	src.frequency.value = 440;
 	src.connect(audioContext.destination);
 	let ct = audioContext.currentTime;
-	src.start(ct+0.02);
-	src.stop(ct+0.05);
-	$('body').on('touchend', (e) => {});
+	src.start(ct+0.05);
+	src.stop(ct+0.06);
+	// Event onlie once
+	$('body').unbind( 'touchend');
 });
 //IOS END
 
@@ -773,16 +790,12 @@ const playMusic = () => {
 	//console.log('startsequencer'+audioContext.currentTime);
     runSequencers();
 };
-
+// sound constants
 let soundSpeed = 0.5;
 let toneduration = 0.3;
 let vibratogain = 0.3;
 let envelopeStartEndTime = [0.01,0.1];
 let lfofreq = 6;  //5
-// Parametrization of the 5 tones  Pitch duration volume gain
-// Debricated to be removed
-// first ist black sound
-const sounds = [[-10, 0.5,0.1],[3, 0.5,0.9],[10, 0.5,0.9],[15, 0.5,0.9],[0, 0.5,0.9]];
 let oscillatorType = 'sawtooth'; //'sine'; // 'sawtooth'
 // ----------------------------------------------------------
 // Sound End 
@@ -791,20 +804,25 @@ let oscillatorType = 'sawtooth'; //'sine'; // 'sawtooth'
 
 // Screen Interaction add und remove mnues
 // ----------------------------------------------------------
-
 const nrOfActiveBttnGroup = (nr) => {
 	let arr = [1,2,3].map((i) => (nr-1)*3+i);
 	let barr = arr.map((i) => tones[i].visible)
 	let tarr = barr.filter((i) => i === true)
 	return tarr.length;
 };
-
 const changeScreenbttn = (id,html,act) => {
 	$('#'+id).attr('action',act).children().replaceWith(html);
 };
 
 const updateScreen = () => {
-
+	let s = '';
+	for (let row in screenView){
+		if (!screenView[row].visible){
+			// delete all row elements
+			s = '#row'+row;
+			$(s).hide();
+		}
+	}
 };
 
 const updateScreenPlusElement = () => {
@@ -856,8 +874,6 @@ const updateScreenPlusElement = () => {
 		}
 	}
 };
-
-
 const dispNavElements = (obj) => {
 	obj.map((o) => {
 		if (o.visible){
@@ -875,9 +891,6 @@ const dispNavElements = (obj) => {
 	});
 };
 
-
-
-
 // Init Screen
 const initd3js = (elId) => {
 	const width = 1280,
@@ -889,57 +902,55 @@ const initd3js = (elId) => {
         .attr('height', height)
         .attr('viewBox', sr_viewport)
         .attr('preserveAspectRatio', 'xMidYMid meet');
-
     return svg;
 };
-
-
 // Main 
 // ----------------------------------------------------------   
-
     // configure display
     dispNavElements(tones);
     syncFormDisplay(tones);
     updateScreenPlusElement();
 
     // bind data and render d3js
-    const svg = initd3js('#chart');
-    let lookupblue = [0,1,2,3].map((i) => tones[i].color);   
-    let mydata = redraw(readInput(1));
-	renderGraph(mydata,svg,lookupblue,false);
+    let conf = [[1,4],[4,7],[7,10],[1,10]];
+    let svgList = [];
+    let mydataList = [];
+    let svg = null;
+    let arr = [];
+    let lookup = null;
+    let mydata = null;
+    let i,j;
+    let tmpw = $(window).width();
 
-    const svggreen = initd3js('#chart-2');
-    let lookupgreen = [0,4,5,6].map((i) => tones[i].color); 
-    let mydataGreen = redraw(readInput(2));
-	renderGraph(mydataGreen,svggreen,lookupgreen,false);
+    for (i = 1; i<5; i++){
+    	svg = initd3js('#'+screenView[`${i}`].graph);
+    	svg.attr('width', tmpw);
+    	svgList.push(svg);
+    	arr = [0];
+    	for (j of range(conf[i-1][0],conf[i-1][1])){
+    		arr.push(j);
+    	}
+    	lookup = arr.map((i) => tones[i].color);
+    	if (i < 4){
+    		mydata = redraw(readInput(i));
+    		mydataList.push(mydata);
+    		registerInputOnChange(i,svg,lookup);
+    		renderGraph(mydata,svg,lookup,false);
 
-    const svgred = initd3js('#chart-3');
-    let lookupred = [0,7,8,9].map((i) => tones[i].color); 
-    let mydataRed = redraw(readInput(3));
-	renderGraph(mydataRed,svgred,lookupred,false);	
-
-	// sum  the data  
-	const svgsum = initd3js('#chart-sum');
-	let lookupall = [0,1,2,3,4,5,6,7,8,9].map((i) => tones[i].color); 
-	let mydatasum = reduce3data(mydata[0],mydataGreen[0],mydataRed[0]);
-	renderGraph(mydatasum,svgsum,lookupall,true);
+    	} else {
+    		mydata = reduce3data(mydataList[0][0],mydataList[1][0],mydataList[2][0]);
+    		renderGraph(mydata,svg,lookup,true);
+    	}
+    }
 
 	// responsive change
     d3.select(window)
     	.on('resize', () => {
-		    //let targetWidth = svg.node().getBoundingClientRect().width;
 		    let winWidth = $(window).width();
-		    svg.attr("width", winWidth);
-		    svggreen.attr("width", winWidth);
-		    svgred.attr("width", winWidth);
-		    svgsum.attr("width", winWidth);
+		    for(let i=0; i < svgList.length; i++){
+		    	svgList[i].attr("width", winWidth);
+		    }
   		});
-    //Triger resize Event
-  	let tmpw = $(window).width();
-	svg.attr('width', tmpw);
-	svggreen.attr('width', tmpw);
-	svgred.attr('width', tmpw);
-	svgsum.attr("width", tmpw);
 
 	// Register Buttons
 	// blackbutton only one registration
@@ -952,21 +963,10 @@ const initd3js = (elId) => {
 	[1,2,3].map(registerTonButton);
 	[1,2,3].map(registerVolumeButton);
 
-	registerInputOnChange(1,svg,lookupblue);
-	registerInputOnChange(2,svggreen,lookupgreen);
-	registerInputOnChange(3,svgred,lookupred);
-
 	registerScreenPlusBttn();
-
-
 	registerPlayButton();
 	registerStopButton();
-	//alert(nrOfActiveBttnGroup(1));
-
-	//changeScreenbttn(screenView['3'].changerowid,screenView.minrowchild,'go go');
-
-
-
+	updateScreen();
 });
 
 
