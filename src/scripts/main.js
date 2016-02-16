@@ -334,43 +334,27 @@ const renderGraph = (data,svg,lookup,checksum) => {
 // ----------------------------------------------------------
 // Visual D3JS End
 
-
-
-
 // User Interactions
 // reads Parameter Ton Zahl for row one
 const readInput = (row) => {
-	let ids = [];
-	// TODO use as parameter later
-	if (typeof row === 'undefined'){
-		alert ('row is undefined');
-	}
-	// let row = 1;
-	let s='';
-	for (let i = 1; i < 4; i++){
-		s = '#btn-row'+row+'-'+i;
-		ids.push(s);
-	} 
-
+	// Element ID of Buttons
+	let ids = [1,2,3].map((i) => '#btn-row'+row+'-'+i);
 	let out = [];
-	for (let i in ids) {
-		let elval = $(ids[i])
-						.parent()
-						.parent()
-						.children('input')[0];
-		let val = 0;
-		if (typeof elval !== 'undefined'){
-			val = elval.value;
-		}
+	let elval,val;
+	ids.forEach((el) => {
+		elval = $(el)
+			.parent()
+			.parent()
+			.children('input')[0];
+		val = elval !== 'undefined' ? elval.value : 0;
 		out.push(val);
-	}
+	});
 	return out;
 };
 
 // Sum all rows together
 // Reduce data from 3 arrays to one Array
 const reduce3data = (arrB,arrG,arrR) => {
-	//console.log(arrB,arrG,arrR);
 	let out = [];
 	let outer = [];
 	outer.push(out);
@@ -449,16 +433,9 @@ const highlightEl  = (el,col,time,hover) =>{
 //apply reducedata
 // TO DO Performance Optimazation
 const registerInputOnChange = (row,svg,lookup) => {
-	let ids = [];
-	// TODO use as parameter later
-	// let row = 1;
-	let s='';
-	for (let i = 1; i < 4; i++){
-		s = '#btn-row'+row+'-'+i;
-		ids.push(s);
-	} 
-	for (let i in ids) {
-		$(ids[i])
+	let ids = [1,2,3].map((i) => '#btn-row'+row+'-'+i);
+	ids.forEach((el) => {
+		$(el)
 			.parent()
 			.parent()
 			.children('input.form-control')
@@ -472,43 +449,31 @@ const registerInputOnChange = (row,svg,lookup) => {
 				updateGraph(newdata2,svgList[3],
 					[0,1,2,3,4,5,6,7,8,9].map((i) => tones[i].color),true);
 			});
-	}
+	});
 };
 
 // Registration of count Button
 const registerButton = (row) => {
-	let ids = [];
-	// TODO use as parameter later
-	//let row = 1;
-	let s='';
-	let tmpEl;
-	for (let i = 1; i < 4; i++){
-		s = '#btn-row'+row+'-'+i;
-		ids.push(s);
-	} 
-	
-    for (let i in ids) {
-    	tmpEl = $(ids[i]).parent().children('ul.dropdown-menu');
-    	$(tmpEl).on('click', (e) => {
-			let inpEl = e.target.parentElement.parentElement.parentElement.parentElement.children[1];
-			inpEl.setAttribute('value',e.target.text);
-			$(inpEl).val(e.target.text);
-			$(inpEl).trigger(jQuery.Event('change'));
-		});	
-    }
+	let ids = [1,2,3].map((i) => '#btn-row'+row+'-'+i);
+	ids.forEach((el) => {
+		$(el).parent()
+			.children('ul.dropdown-menu')
+			.on('click', (e) => {
+				let inpEl = e.target.parentElement.parentElement.parentElement.parentElement.children[1];
+				inpEl.setAttribute('value',e.target.text);
+				$(inpEl).val(e.target.text);
+				// trigger to react on number change
+				$(inpEl).trigger(jQuery.Event('change'));
+			});	
+
+	});
 };
 
 // Register Ton button
 const registerTonButton = (row) => {
-	let ids = [];
-	let s='';
-
-	for (let i = 1; i < 4; i++){
-		s = '#btn-row'+row+'-'+i+'-ton';
-		ids.push(s);
-	} 
-    for (let i in ids) {
-    	$(ids[i])
+	let ids = [1,2,3].map((i) => '#btn-row'+row+'-'+i+'-ton');
+	ids.forEach((el) => {
+		$(el)
 			.parent()
 			.children('ul.dropdown-menu')
 			.on('click', (e) => {
@@ -517,7 +482,8 @@ const registerTonButton = (row) => {
 				tones[nr].instrument = e.target.text;
 				updateInput(tones,nr);
 		});	
-    }
+	});
+
 };
 //Register first Black Button
 const registerBlackTonButton = () => {
@@ -531,15 +497,9 @@ const registerBlackTonButton = () => {
 };
 // Register Volumen button
 const registerVolumeButton = (row) => {
-	let ids = [];
-	let s='';
-	for (let i = 1; i < 4; i++){
-		s = '#btn-row'+row+'-'+i+'-volume';
-		ids.push(s);
-	} 
-	// let ec = jQuery.Event( 'change' );
-    for (let i in ids) {
-    	$(ids[i])
+	let ids = [1,2,3].map((i) => '#btn-row'+row+'-'+i+'-volume');
+	ids.forEach((el) => {
+		$(el)
 			.parent()
 			.children('ul.dropdown-menu')
 			.on('click', (e) => {
@@ -548,7 +508,7 @@ const registerVolumeButton = (row) => {
 				tones[nr].gain = parseInt(e.target.text)*1.0/100;
 				updateInput(tones,nr);
 		});	
-    }
+	});
 };
 
 // Register First Gray Button
@@ -620,16 +580,17 @@ const registerStopButton = () => {
 
 // Register all ScreenPlusBttns
 const registerScreenPlusBttn = () => {
-	let s;
-	for (let i=1; i<4; i++){
-		s = 'btn-row'+i+'-2-add';
-		$('#'+s).on('click', (e) => {
+	
+	let ids = [1,2,3].map((i) => '#btn-row'+i+'-2-add');
+	ids.forEach((el) => {
+		$(el).on('click', (e) => {
 			let nr;
 			let k = 2;
 			let ta = e.target.getAttribute('action');
 			if (typeof ta === 'undefined' || ta === null){
 				ta = e.target.parentElement.getAttribute('action');
 			}
+
 			let tmp = ta.split('');
 			nr = (parseInt(tmp[1])-1)*3+k;
 			if (tmp[0] === '+'){
@@ -643,8 +604,11 @@ const registerScreenPlusBttn = () => {
 			updateScreenPlusElement();
 			
 		});
-		s = 'btn-row'+i+'-3-add';
-		$('#'+s).on('click', (e) => {
+	});
+
+	ids = [1,2,3].map((i) => '#btn-row'+i+'-3-add');
+	ids.forEach((el) => {
+		$(el).on('click', (e) => {
 			let nr;
 			let k = 3;
 			let ta = e.target.getAttribute('action');
@@ -663,13 +627,13 @@ const registerScreenPlusBttn = () => {
 			}
 			updateScreenPlusElement();
 		});
-	}
+	});
 };
 
 
 
 const registerScreenRowPlusBttn = () => {
-	['addrow2','addrow3'].map((s) =>{
+	['addrow2','addrow3'].forEach((s) =>{
 		$('#'+s).on('click', (e) => {
 			let ta = $(e.target).children('div');
 			let act = ta[0].getAttribute('action');
@@ -849,7 +813,7 @@ const nrOfActiveBttnGroup = (nr) => {
 	return tarr.length;
 };
 const changeScreenbttn = (id,html,act) => {
-	$('#'+id).attr('action',act).children().replaceWith(html);
+	$(id).attr('action',act).children().replaceWith(html);
 };
 
 const hideAndsetRowZero = (row) => {
@@ -858,8 +822,7 @@ const hideAndsetRowZero = (row) => {
 		el=$('#'+tones[i].id);
 		el.hide();
 		// hide all + - signs
-		[2,3].map((i) => {$('#btn-row'+row+'-'+i+'-add').hide();});
-
+		[2,3].forEach((i) => {$('#btn-row'+row+'-'+i+'-add').hide();});
 			if (typeof el.children('input')[0] !== 'undefined'){
 				inpEl = el.children('input')[0];
 				inpEl.value=0;
@@ -872,17 +835,13 @@ const showRow = (row) => {
 	$('#btn-row'+row+'-1-add').show();
 	let i = conf[row-1][0];
 	$('#'+tones[i].id).show();
-
 };
 
 const updateRowButtons = () => {
-	let s = '';
-	for (let row of ['2','3']){
+	['2','3'].forEach((row) => {
 		if (screenView[row].addrow){
 			$('#'+screenView[row].changerowid).children('div').replaceWith( screenView.archild );
 			$('#'+screenView[row].changerowid).show();
-
-			// show grafic
 		}
 		if (screenView[row].redrow){
 			$('#'+screenView[row].changerowid).children('div').replaceWith( screenView.minrowchild );
@@ -891,14 +850,12 @@ const updateRowButtons = () => {
 		if(!screenView[row].redrow && !screenView[row].addrow){
 			$('#'+screenView[row].changerowid).hide();
 		}
-		
-	}
-
+	});
 };
 
 const updateScreen = () => {
 	let s = '';
-	for (let row of ['2','3']){
+	['2','3'].forEach((row) => {
 		s = '#'+screenView[row].graph;
 		if (screenView[row].visible){
 			$(s).show();
@@ -908,28 +865,27 @@ const updateScreen = () => {
 			$(s).hide();
 			hideAndsetRowZero(parseInt(row));
 		}
-	}
+	});
 };
 
+// three possible states
 const updateScreenPlusElement = () => {
-	let nr,s,tmp,el,inpEl;
+	let nr,el,inpEl;
 	[1,2,3].forEach((i) => {
 		if (screenView[i].visible){
 			nr = nrOfActiveBttnGroup(i);
 			switch(nr){
 				case 1:
-					s = 'btn-row'+i+'-2-add';
-					changeScreenbttn(s,screenView.addbttn,'+'+i);
-					$('#'+s).show();
+					changeScreenbttn('#btn-row'+i+'-2-add',screenView.addbttn,'+'+i);
+					$('#btn-row'+i+'-2-add').show();
 					$('#btn-row'+i+'-3-add').hide();
-					tmp = i*3;
-					el=$('#'+tones[tmp].id);
+					el=$('#'+tones[i*3].id);
 					if (typeof el.children('input')[0] !== 'undefined'){
 						inpEl = el.children('input')[0];
 						inpEl.value=0;
 						$(inpEl).trigger(jQuery.Event('change'));
 					}
-					el=$('#'+tones[tmp-1].id);
+					el=$('#'+tones[i*3-1].id);
 					if (typeof el.children('input')[0] !== 'undefined'){
 						inpEl = el.children('input')[0];
 						inpEl.value=0;
@@ -937,14 +893,11 @@ const updateScreenPlusElement = () => {
 					}
 					break;
 				case 2:
-					s = 'btn-row'+i+'-2-add';
-					changeScreenbttn(s,screenView.minbttn,'-'+i);
-					$('#'+s).show();
-					s = 'btn-row'+i+'-3-add';
-					changeScreenbttn(s,screenView.addbttn,'+'+i);
-					$('#'+s).show();
-					tmp = i*3;
-					el=$('#'+tones[tmp].id);
+					changeScreenbttn('#btn-row'+i+'-2-add',screenView.minbttn,'-'+i);
+					$('#btn-row'+i+'-2-add').show();
+					changeScreenbttn('#btn-row'+i+'-3-add',screenView.addbttn,'+'+i);
+					$('#btn-row'+i+'-3-add').show();
+					el=$('#'+tones[i*3].id);
 					if (typeof el.children('input')[0] !== 'undefined'){
 						inpEl = el.children('input')[0];
 						inpEl.value=0;
@@ -953,9 +906,8 @@ const updateScreenPlusElement = () => {
 					break;
 				case 3:
 					$('#btn-row'+i+'-2-add').hide(); 
-					s = 'btn-row'+i+'-3-add';
-					changeScreenbttn(s,screenView.minbttn,'-'+i);
-					$('#'+s).show();
+					changeScreenbttn('#btn-row'+i+'-3-add',screenView.minbttn,'-'+i);
+					$('#btn-row'+i+'-3-add').show();
 					break
 				default:
 			}
@@ -1044,10 +996,9 @@ const initd3js = (elId) => {
 	registerBlackTonButton();
 
 	// Register 3 rows V Button
-	// TODO Check REgister Button
-	[1,2,3].map(registerButton);
-	[1,2,3].map(registerTonButton);
-	[1,2,3].map(registerVolumeButton);
+	[1,2,3].forEach((i) => registerButton(i));
+	[1,2,3].forEach((i) => registerTonButton(i));
+	[1,2,3].forEach((i) => registerVolumeButton(i));
 
 	registerScreenPlusBttn();
 	registerScreenRowPlusBttn();
