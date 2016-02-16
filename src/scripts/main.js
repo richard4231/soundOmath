@@ -163,14 +163,14 @@ let screenView = {
 		'visible'  	: true,
 		'graph'		: 'chart-2',
 		'addrow'	: false,
-		'minrow'	: false,
+		'redrow'	: true,
 		'data'		: true,
 		'changerowid' : 'addrow2'
 	}, 
 	'3'	: {
-		'visible'  	: true,
+		'visible'  	: false,
 		'graph'		: 'chart-3',
-		'addrow'	: false,
+		'addrow'	: true,
 		'redrow'	: false,
 		'data'		: true,
 		'changerowid' : 'addrow3'
@@ -180,8 +180,8 @@ let screenView = {
 		'graph'		: 'chart-sum',
 		'data'		: true
 	},
-	'archild' 		: '<div><i class="fa fa-plus-square"></i><span>Ton-Zahlenreihe</span></div>',
-	'minrowchild' 	: '<div><i class="fa fa-minus-square"></i><span>Ton-Zahlenreihe</span></div>', 
+	'archild' 		: '<div action="plus"><i class="fa fa-plus-square"></i><span>Ton-Zahlenreihe</span></div>',
+	'minrowchild' 	: '<div action="minus"><i class="fa fa-minus-square"></i><span>Ton-Zahlenreihe</span></div>', 
 	'addbttn'		: '<span class="glyphicon glyphicon-plus"></span>',
 	'minbttn'		: '<span class="glyphicon glyphicon-minus"></span>'
 };
@@ -666,6 +666,44 @@ const registerScreenPlusBttn = () => {
 	}
 };
 
+
+
+const registerScreenRowPlusBttn = () => {
+	['addrow2','addrow3'].map((s) =>{
+		$('#'+s).on('click', (e) => {
+			let ta = $(e.target).children('div');
+			let act = ta[0].getAttribute('action');
+			let nr = (s.split(''))[6];
+			if (act==='plus'){
+				screenView[nr].visible = true;
+				screenView[nr].addrow = false;
+				screenView[nr].redrow = true;
+				if (nr === '3'){
+					screenView['2'].redrow = false;
+				}
+				if (nr === '2'){
+					screenView['3'].addrow = true;
+				}
+
+			}
+			if (act==='minus'){
+				screenView[nr].visible = false;
+				screenView[nr].addrow = true;
+				screenView[nr].redrow = false;
+				if (nr === '2'){
+					screenView['3'].addrow = false;
+				}
+				if (nr === '3'){
+					screenView['2'].redrow = true;
+				}
+
+			}
+			updateScreen();
+			updateRowButtons();
+		});
+	});
+};
+
 // Sound 
 // ----------------------------------------------------------
 const playSound = (startTime, pitchNr, duration, gainOld) => {
@@ -814,65 +852,115 @@ const changeScreenbttn = (id,html,act) => {
 	$('#'+id).attr('action',act).children().replaceWith(html);
 };
 
+const hideAndsetRowZero = (row) => {
+	let el,inpEl;
+	for(let i = conf[row-1][0]; i < conf[row-1][1]; i++){
+		el=$('#'+tones[i].id);
+		el.hide();
+		// hide all + - signs
+		[2,3].map((i) => {$('#btn-row'+row+'-'+i+'-add').hide();});
+
+			if (typeof el.children('input')[0] !== 'undefined'){
+				inpEl = el.children('input')[0];
+				inpEl.value=0;
+				$(inpEl).trigger(jQuery.Event('change'));
+		}
+	}
+};
+
+const showRow = (row) => {
+	$('#btn-row'+row+'-1-add').show();
+	let i = conf[row-1][0];
+	$('#'+tones[i].id).show();
+
+};
+
+const updateRowButtons = () => {
+	let s = '';
+	for (let row of ['2','3']){
+		if (screenView[row].addrow){
+			$('#'+screenView[row].changerowid).children('div').replaceWith( screenView.archild );
+			$('#'+screenView[row].changerowid).show();
+
+			// show grafic
+		}
+		if (screenView[row].redrow){
+			$('#'+screenView[row].changerowid).children('div').replaceWith( screenView.minrowchild );
+			$('#'+screenView[row].changerowid).show();
+		}
+		if(!screenView[row].redrow && !screenView[row].addrow){
+			$('#'+screenView[row].changerowid).hide();
+		}
+		
+	}
+
+};
+
 const updateScreen = () => {
 	let s = '';
-	for (let row in screenView){
-		if (!screenView[row].visible){
-			// delete all row elements
-			s = '#row'+row;
+	for (let row of ['2','3']){
+		s = '#'+screenView[row].graph;
+		if (screenView[row].visible){
+			$(s).show();
+			showRow(parseInt(row));
+			updateScreenPlusElement();
+		} else {
 			$(s).hide();
+			hideAndsetRowZero(parseInt(row));
 		}
 	}
 };
 
 const updateScreenPlusElement = () => {
 	let nr,s,tmp,el,inpEl;
-	for (let i=1; i<4; i++){
-		nr = nrOfActiveBttnGroup(i);
-		switch(nr){
-			case 1:
-				s = 'btn-row'+i+'-2-add';
-				changeScreenbttn(s,screenView.addbttn,'+'+i);
-				$('#'+s).show();
-				$('#btn-row'+i+'-3-add').hide();
-				tmp = i*3;
-				el=$('#'+tones[tmp].id);
-				if (typeof el.children('input')[0] !== 'undefined'){
-					inpEl = el.children('input')[0];
-					inpEl.value=0;
-					$(inpEl).trigger(jQuery.Event('change'));
-				}
-				el=$('#'+tones[tmp-1].id);
-				if (typeof el.children('input')[0] !== 'undefined'){
-					inpEl = el.children('input')[0];
-					inpEl.value=0;
-					$(inpEl).trigger(jQuery.Event('change'));
-				}
-				break;
-			case 2:
-				s = 'btn-row'+i+'-2-add';
-				changeScreenbttn(s,screenView.minbttn,'-'+i);
-				$('#'+s).show();
-				s = 'btn-row'+i+'-3-add';
-				changeScreenbttn(s,screenView.addbttn,'+'+i);
-				$('#'+s).show();
-				tmp = i*3;
-				el=$('#'+tones[tmp].id);
-				if (typeof el.children('input')[0] !== 'undefined'){
-					inpEl = el.children('input')[0];
-					inpEl.value=0;
-					$(inpEl).trigger(jQuery.Event('change'));
-				}
-				break;
-			case 3:
-				$('#btn-row'+i+'-2-add').hide(); 
-				s = 'btn-row'+i+'-3-add';
-				changeScreenbttn(s,screenView.minbttn,'-'+i);
-				$('#'+s).show();
-				break
-			default:
+	[1,2,3].forEach((i) => {
+		if (screenView[i].visible){
+			nr = nrOfActiveBttnGroup(i);
+			switch(nr){
+				case 1:
+					s = 'btn-row'+i+'-2-add';
+					changeScreenbttn(s,screenView.addbttn,'+'+i);
+					$('#'+s).show();
+					$('#btn-row'+i+'-3-add').hide();
+					tmp = i*3;
+					el=$('#'+tones[tmp].id);
+					if (typeof el.children('input')[0] !== 'undefined'){
+						inpEl = el.children('input')[0];
+						inpEl.value=0;
+						$(inpEl).trigger(jQuery.Event('change'));
+					}
+					el=$('#'+tones[tmp-1].id);
+					if (typeof el.children('input')[0] !== 'undefined'){
+						inpEl = el.children('input')[0];
+						inpEl.value=0;
+						$(inpEl).trigger(jQuery.Event('change'));
+					}
+					break;
+				case 2:
+					s = 'btn-row'+i+'-2-add';
+					changeScreenbttn(s,screenView.minbttn,'-'+i);
+					$('#'+s).show();
+					s = 'btn-row'+i+'-3-add';
+					changeScreenbttn(s,screenView.addbttn,'+'+i);
+					$('#'+s).show();
+					tmp = i*3;
+					el=$('#'+tones[tmp].id);
+					if (typeof el.children('input')[0] !== 'undefined'){
+						inpEl = el.children('input')[0];
+						inpEl.value=0;
+						$(inpEl).trigger(jQuery.Event('change'));
+					}
+					break;
+				case 3:
+					$('#btn-row'+i+'-2-add').hide(); 
+					s = 'btn-row'+i+'-3-add';
+					changeScreenbttn(s,screenView.minbttn,'-'+i);
+					$('#'+s).show();
+					break
+				default:
+			}
 		}
-	}
+	});
 };
 const dispNavElements = (obj) => {
 	obj.map((o) => {
@@ -885,7 +973,6 @@ const dispNavElements = (obj) => {
 			if (typeof el.children('input')[0] !== 'undefined'){
 				el.children('input')[0].value=0;
 			}
-			
 			//console.log(el.children('input')[0].value);
 		}
 	});
@@ -942,7 +1029,6 @@ const initd3js = (elId) => {
     		renderGraph(mydata,svg,lookup,true);
     	}
     }
-
 	// responsive change
     d3.select(window)
     	.on('resize', () => {
@@ -964,9 +1050,11 @@ const initd3js = (elId) => {
 	[1,2,3].map(registerVolumeButton);
 
 	registerScreenPlusBttn();
+	registerScreenRowPlusBttn();
 	registerPlayButton();
 	registerStopButton();
 	updateScreen();
+	updateRowButtons();
 });
 
 
