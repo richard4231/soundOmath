@@ -113,7 +113,7 @@ let notes = {
 	'E3': {
 		'freq': 440,
 		'detune': -500
-	}, 
+	},
 	'F3': {
 		'freq': 440,
 		'detune': -400
@@ -166,7 +166,7 @@ let screenView = {
 		'redrow'	: true,
 		'data'		: true,
 		'changerowid' : 'addrow2'
-	}, 
+	},
 	'3'	: {
 		'visible'  	: false,
 		'graph'		: 'chart-3',
@@ -181,7 +181,7 @@ let screenView = {
 		'data'		: true
 	},
 	'archild' 		: '<div action="plus"><i class="fa fa-plus-square"></i><span>Ton-Zahlenreihe</span></div>',
-	'minrowchild' 	: '<div action="minus"><i class="fa fa-minus-square"></i><span>Ton-Zahlenreihe</span></div>', 
+	'minrowchild' 	: '<div action="minus"><i class="fa fa-minus-square"></i><span>Ton-Zahlenreihe</span></div>',
 	'addbttn'		: '<span class="glyphicon glyphicon-plus"></span>',
 	'minbttn'		: '<span class="glyphicon glyphicon-minus"></span>'
 };
@@ -221,16 +221,16 @@ const updateGraph = (data,svg,lookup,checksum) => {
 	    innergrp
 	    .exit()
 	    .remove();
-	    
+
 	    innergrp
 	    .enter()
 		.append('g')
 		.attr('transform', (d, i) => 'translate(' + 28 * i + ',0)');
-		
+
 		// select rects
 		let rects=innergrp.selectAll('rect')
 		.data((d) => d);
-		
+
 		// case 3 -> 2 -> 1 remove rects
 		rects.exit()
 		.remove();
@@ -247,7 +247,7 @@ const updateGraph = (data,svg,lookup,checksum) => {
 		.attr('width', (d,i,k) =>  rw/data[0][k].length)
 		.attr('height', rh);
 
-	// draw a single row	
+	// draw a single row
 	} else {
 		svg.selectAll('svg g rect')
 		.data(data[0])
@@ -269,7 +269,7 @@ const renderGraph = (data,svg,lookup,checksum) => {
 	    .data(data)
 	    .enter()
 	    .append('g')
-	    .attr('transform', (d, i) => 'translate(0, ' + 54 * i + ')');  
+	    .attr('transform', (d, i) => 'translate(0, ' + 54 * i + ')');
 
 	if (checksum){
 		//inner structure
@@ -286,9 +286,9 @@ const renderGraph = (data,svg,lookup,checksum) => {
 		    	.attr('x', (d, i,k) =>  rw/data[0][k].length * i)
 		        .attr('fill', (d,i) => lookup[d])
 		        .attr('width', (d,i,k) =>  rw/data[0][k].length)
-		        .attr('height', rh);  
+		        .attr('height', rh);
 	} else {
-		// For each group, create a set of rectangles and bind 
+		// For each group, create a set of rectangles and bind
 		// them to the inner array (the inner array is already
 		// binded to the group)
 		grp.selectAll('rect')
@@ -299,10 +299,10 @@ const renderGraph = (data,svg,lookup,checksum) => {
 		        .attr('x', (d, i) =>  28 * i)
 		        .attr('fill', (d,i) => lookup[d])
 		        .attr('width', rw)
-		        .attr('height', rh);     
+		        .attr('height', rh);
 	}
 
-	//Modulo 10 ticks        
+	//Modulo 10 ticks
 	grp.selectAll('line')
 	    .data((d) => {
 	    	let tmp = Math.trunc(d.length / 10);
@@ -316,8 +316,8 @@ const renderGraph = (data,svg,lookup,checksum) => {
   			.attr('y2',40)
   			.style('stroke', 'black')
   			.style('stroke-width','2px');
-  
-  	// Text 
+
+  	// Text
   	grp.selectAll('text')
 	    .data((d) => {
 	    	let tmp = Math.trunc(d.length / 10);
@@ -327,8 +327,8 @@ const renderGraph = (data,svg,lookup,checksum) => {
 	    .enter().append('text')
 	    //.filter((d,i) => i%10===0)
 	    	.attr('x', (d, i) => { return 280 * i+5; })
-	    	.attr('y', '38')  
-	    	.attr('font-family', 'sans-serif') 
+	    	.attr('y', '38')
+	    	.attr('font-family', 'sans-serif')
 	    	.text( (d, i,k) => k*40+i*10+1);
 };
 // ----------------------------------------------------------
@@ -464,7 +464,7 @@ const registerButton = (row) => {
 				$(inpEl).val(e.target.text);
 				// trigger to react on number change
 				$(inpEl).trigger(jQuery.Event('change'));
-			});	
+			});
 
 	});
 };
@@ -481,7 +481,7 @@ const registerTonButton = (row) => {
 			    let nr = parseInt(e.target.parentElement.parentElement.getAttribute('nr'));
 				tones[nr].instrument = e.target.text;
 				updateInput(tones,nr);
-		});	
+		});
 	});
 
 };
@@ -493,7 +493,7 @@ const registerBlackTonButton = () => {
 		.on('click', (e) => {
 			tones[0].instrument = e.target.text;
 			updateInput(tones,0);
-		});	
+		});
 };
 // Register Volumen button
 const registerVolumeButton = (row) => {
@@ -507,7 +507,7 @@ const registerVolumeButton = (row) => {
 				tones[nr].vol = e.target.text;
 				tones[nr].gain = parseInt(e.target.text)*1.0/100;
 				updateInput(tones,nr);
-		});	
+		});
 	});
 };
 
@@ -520,7 +520,7 @@ const registerBlackVolumeButton = () => {
 			tones[0].vol = e.target.text;
 			tones[0].gain = parseInt(e.target.text)*1.0/100;
 			updateInput(tones,0);
-		});	
+		});
 };
 
 // Helperclass Add or update a Text in a button
@@ -580,7 +580,7 @@ const registerStopButton = () => {
 
 // Register all ScreenPlusBttns
 const registerScreenPlusBttn = () => {
-	
+
 	let ids = [1,2,3].map((i) => '#btn-row'+i+'-2-add');
 	ids.forEach((el) => {
 		$(el).on('click', (e) => {
@@ -602,7 +602,7 @@ const registerScreenPlusBttn = () => {
 				$('#'+tones[nr].id).hide();
 			}
 			updateScreenPlusElement();
-			
+
 		});
 	});
 
@@ -636,7 +636,13 @@ const registerScreenRowPlusBttn = () => {
 	['addrow2','addrow3'].forEach((s) =>{
 		$('#'+s).on('click', (e) => {
 			let ta = $(e.target).children('div');
-			let act = ta[0].getAttribute('action');
+			let act;
+			if (ta.length > 0){
+				act = ta[0].getAttribute('action');
+			}else{
+				act = e.target.parentElement.getAttribute('action');
+			}
+			
 			let nr = (s.split(''))[6];
 			if (act==='plus'){
 				screenView[nr].visible = true;
@@ -668,22 +674,22 @@ const registerScreenRowPlusBttn = () => {
 	});
 };
 
-// Sound 
+// Sound
 // ----------------------------------------------------------
 const playSound = (startTime, pitchNr, duration, gainOld) => {
 	//let startTime = audioContext.currentTime + delay;
   	let endTime = startTime + duration;
-  	//let pitch = tones[pitchNr].instrument; 
+  	//let pitch = tones[pitchNr].instrument;
   	let gain = tones[pitchNr].gain;
 
   	let outgain = audioContext.createGain();
   	outgain.gain.value = gain;
-  	outgain.connect(audioContext.destination); 	
+  	outgain.connect(audioContext.destination);
 
   	let envelope = audioContext.createGain();
   	envelope.connect(outgain);
   	envelope.gain.value = 0;
-  	
+
   	envelope.gain.setTargetAtTime(1, startTime, envelopeStartEndTime[0]);
   	envelope.gain.setTargetAtTime(0, endTime, envelopeStartEndTime[1]);
 
@@ -700,7 +706,7 @@ const playSound = (startTime, pitchNr, duration, gainOld) => {
 
 	let lfo = audioContext.createOscillator();
 	lfo.connect(vibrato);
-	lfo.frequency.value =lfofreq; 
+	lfo.frequency.value =lfofreq;
 
 	oscillator.start(startTime);
   	lfo.start(startTime);
@@ -717,9 +723,9 @@ const runSequencers = () => {
 		//console.log('ct:'+ct+'planed time:'+soundQueue[0][0]);
 		let item = soundQueue.splice(0,1);
 		// playsound (starttime, pitch, duration,             gaiin)
-		//playSound(item[0][0],sounds[item[0][1]][0],item[0][2],tones[item[0][1]].gain);		
-	
-		playSound(item[0][0],item[0][1],item[0][2],tones[item[0][1]].gain);		
+		//playSound(item[0][0],sounds[item[0][1]][0],item[0][2],tones[item[0][1]].gain);
+
+		playSound(item[0][0],item[0][1],item[0][2],tones[item[0][1]].gain);
 		// element              color       duration                 hovercolor
 		highlightEl(item[0][3],tones[item[0][1]].color,item[0][2],tones[item[0][1]].hover);
 	}
@@ -769,7 +775,7 @@ $('body').on('touchend', (e) => {
 
 /// Main Sound Play Method Fill the queue and time the visual
 const playMusic = () => {
-	// fill soundQueue	
+	// fill soundQueue
 	let j;
 	let rectarr = d3.select('#chart-sum').select('g').selectAll('g').data();
 	let elarr = d3.select('#chart-sum').select('g').selectAll('g')[0];
@@ -800,7 +806,7 @@ let envelopeStartEndTime = [0.01,0.1];
 let lfofreq = 6;  //5
 let oscillatorType = 'sawtooth'; //'sine'; // 'sawtooth'
 // ----------------------------------------------------------
-// Sound End 
+// Sound End
 
 
 
@@ -905,7 +911,7 @@ const updateScreenPlusElement = () => {
 					}
 					break;
 				case 3:
-					$('#btn-row'+i+'-2-add').hide(); 
+					$('#btn-row'+i+'-2-add').hide();
 					changeScreenbttn('#btn-row'+i+'-3-add',screenView.minbttn,'-'+i);
 					$('#btn-row'+i+'-3-add').show();
 					break
@@ -943,8 +949,8 @@ const initd3js = (elId) => {
         .attr('preserveAspectRatio', 'xMidYMid meet');
     return svg;
 };
-// Main 
-// ----------------------------------------------------------   
+// Main
+// ----------------------------------------------------------
     // configure display
     dispNavElements(tones);
     syncFormDisplay(tones);
@@ -1007,6 +1013,3 @@ const initd3js = (elId) => {
 	updateScreen();
 	updateRowButtons();
 });
-
-
-
