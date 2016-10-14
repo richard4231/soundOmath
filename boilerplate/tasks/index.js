@@ -59,10 +59,10 @@ gulp.task(
 const cleanTask = gulp.task('clean');
 cleanTask.description = 'Clean dist folder, gulp all caches and sass cache.';
 
-// Build
+// Build 
 gulp.task(
   'build',
-  gulp.parallel('scripts', 'styles', buildSitemap)
+  gulp.parallel('scripts','styles', buildSitemap)
 );
 const buildTask = gulp.task('build');
 buildTask.description = 'Build scripts and styles with minification tasks.';
@@ -78,12 +78,12 @@ testPsiTask.description = 'PageSpeed Insights reportings.';
 gulp.task(testScripts);
 gulp.task(testMarkup);
 
-// Default task
+// Default task **** without images und styles
 if (config.args.env === 'dev') {
   gulp.task(
     'default',
     gulp.series(
-      gulp.parallel(markup, 'copycss','styles', 'scripts', 'images'),
+      gulp.parallel(markup, 'copycss', 'scripts'),
       gulp.parallel(serve, watch)
     )
   );
